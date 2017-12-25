@@ -3,14 +3,18 @@
 namespace {
 
 	inline bool test() {
+
+		dbj::print("\nUnicode ", (dbj::unicode ? " is " : "NOT"), " defined");
+
 		try {
 			auto cli_data = dbj::cli_data();
+			using type_ = std::decay<decltype(cli_data)>::type;
+			auto type_name_ = typeid(type_{}).name();
 
 			dbj::print(
 				"\nProgram: ", cli_data[0],
-				"\nUnicode ", (dbj::unicode ? "" : "NOT"), " defined",
 				"\nCommand Line data:\t", cli_data,
-				"\nType: ", typeid(cli_data).name()
+				"\nType: ", type_name_
 			);
 		}
 		catch (std::runtime_error & err) {
@@ -18,9 +22,13 @@ namespace {
 		}
 
 		try {
+			auto result = stwish::cli_data();
+			using type_ =  std::decay<decltype(result)>::type ;
+			auto type_name_ = typeid(type_{}).name();
 			dbj::print(
-				"\nSteve tcli data :", stwish::cli_data(),
-				"\nType: ", typeid(stwish::cli_data()).name()
+				"\nProgram: ", result[0],
+				"\nSteve tcli data :", result ,
+				"\nType: ", type_name_
 			);
 		}
 		catch (std::runtime_error & err) {

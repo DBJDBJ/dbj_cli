@@ -69,13 +69,28 @@ namespace dbj {
 // #define DBJ_TRACE((void)0)
 
 #pragma region micro print fwork 
+
+namespace {
+	
+	template<typename T> 
+	std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {
+		for (auto& el : vec) { os << el << ' '; }
+		return os;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const std::wstring & s_ ) {
+		os <<  std::string( s_.begin(), s_.end() ) ; 
+		return os;
+	}
+
+};
+
 namespace dbj {
 
 	namespace {
 
 		class DBJLog final {
 
-			typedef std::ostream  stream_type;
 			/*
 			usage: MyBuf buff; std::ostream stream(&buf); stream << 1 << true << L"X" << std::flush ;
 			*/
@@ -100,7 +115,9 @@ namespace dbj {
 
 		public:
 			
-			stream_type & operator () () noexcept {
+			typedef std::ostream  stream_type;
+
+			stream_type & stream () noexcept {
 				static std::ostream log_stream_( &buffer_ );
 				return log_stream_;
 			}
@@ -108,7 +125,7 @@ namespace dbj {
 			 mutable bool flushed = false;
 
 			 void flush () {
-					 stream_type & stream_ = (*this)();
+					 stream_type & stream_ = this->stream();
 					 _ASSERTE(stream_.good());
 					 stream_.flush();
 					 this->flushed = !this->flushed;
@@ -126,20 +143,22 @@ namespace dbj {
 			 }
 
 		}  log{} ; // DBJLog
-
+#if 0
+		// msvc if-constepxr() is not "there yet"
+		// dbj 25DEC17
 		auto out_ = [] (auto & val_) 
 		{
 			auto range_out = [] (auto bgn_, auto end_ ) {
 				auto & walker = bgn_;
-				out_("{");
-				while (walker != end_) { out_(" "); out_(*walker); out_(" "); walker++; }
-				out_("}");
+				log.stream("{");
+				while (walker != end_) { log.stream(" "); log.stream(*walker); log.stream(" "); walker++; }
+				log.stream("}");
 			};
 			
 			using val_type = decltype(val_);
 
 			if constexpr( std::is_same_v<val_type, std::wstring>) {
-				log() << ( std::string(val_.begin(), val_.end()) );
+				log.stream() << ( std::string(val_.begin(), val_.end()) );
 				return;
 			} 
 			if constexpr( std::is_same_v<val_type, vector_wstrings_type > ) {
@@ -150,15 +169,15 @@ namespace dbj {
 				range_out(val_.begin(), val_.end());
 				return;
 			}
-					log() << val_;
+					log.stream() << val_;
 					return;
 		};
-
+#endif
 		auto print = [](auto... param)
 		{
 			if constexpr (sizeof...(param) > 0) {
 				char dummy[sizeof...(param)] = {
-					(out_(/* std::forward<decltype(param)> */ (param)), 0)...
+					(( log.stream() << param), 0)...
 				};
 			}
 			return print;

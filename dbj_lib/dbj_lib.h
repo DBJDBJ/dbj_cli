@@ -40,12 +40,16 @@ namespace dbj {
 		auto cli_data = [] ( ) {
 
 			try {
-				if (wargv_) 
+// following does not compile (of course) 
+// so until a solution is found we will rely on _UNICODE macro
+#if _UNICODE
+				if (wargv_) // not guaranteed 
 				return make_cli_vector<wchar_t>( wargv_ , argc_ );
-
-				// if (argv_)
-				// return make_cli_vector<char>( argv_, argc_ );
-
+#else
+				if (argv_) // not guaranteed
+				return make_cli_vector<char>( argv_, argc_ );
+#endif
+				// it is not guaranteed by UCRT when command line arguments will be ready
 				throw  std::runtime_error(  __FUNCSIG__ " Error: command line arguments are not ready yet");
 			}
 			catch (...) {

@@ -1,5 +1,5 @@
 #pragma once
-#include <cassert>
+// #include <cassert>
 #include <cstdlib>
 #include <sstream>
 #include <vector>
@@ -7,77 +7,26 @@
 #include <crtdbg.h>
 #include <cstdio>
 
-#pragma region micro util
+/*
+R&D can be also found using the Coliru command line: cat 
+
+http://coliru.stacked-crooked.com/a/bca961cbad3be340
+
+/Archive2/bc/a961cbad3be340/main.cpp
+*/
+
+
+
 namespace dbj {
 
-#ifdef _UNICODE
-	constexpr auto unicode = true;
-#else
-	constexpr auto unicode = false;
-#endif
-	
-	constexpr auto bufsiz = BUFSIZ * 2;
-
-	using vector_wstrings_type = std::vector<std::wstring>;
-	using vector_strings_type = std::vector<std::string >;
-
-	namespace {
-
-		template< typename T>
-		void out_ ( const T & val_) {
-			auto debug_stream = std::ostringstream {};
-			debug_stream << val_;
-			auto string_trans = debug_stream.str();
-#ifndef _WINDOWS
-			// if one wants to pipe/redirect the console output
-			fprintf(stderr, string_trans.data());
-#endif
-			_RPT0(_CRT_WARN, string_trans.data());
-		};
-
-		// unicode
-		void out_(const std::wstring & val_) {
-			auto debug_stream = std::wostringstream{};
-			debug_stream << val_;
-			auto string_trans = debug_stream.str();
-#ifndef _WINDOWS
-			// if one wants to pipe/redirect the console output
-			fwprintf(stderr, string_trans.data());
-#endif
-			_RPTW0(_CRT_WARN, string_trans.data());
-		};
-
-
-		void out_ ( vector_strings_type val_) {
-			out_("{");
-			for (auto v : val_) { out_(" "); out_(v); out_(" "); }
-			out_("}");
-		};
-
-		void out_( vector_wstrings_type val_) {
-			out_("{");
-			for (auto v : val_) { out_(" "); out_(v); out_(" "); }
-			out_("}");
-		};
-
-
-	auto print = [](auto... param)
+	/*
+	OK since VS 2017 15.5 update
+	*/
+	template<typename CT>
+	auto make_cli_vector = [](CT ** _arg_p, int _argc)
 	{
-		if constexpr (sizeof...(param) > 0) {
-			char dummy[sizeof...(param)] = {
-				(out_(/* std::forward<decltype(param)> */ (param)), 0)...
-			};
-		}
-		return print;
+		return std::vector< std::basic_string<CT> >{ _arg_p, _arg_p + _argc};
 	};
-   } // nspace
-} // dbj
-
-namespace {
-}
-#pragma endregion
-
-namespace dbj {
 
 	namespace {
 #define _CRT_DECLARE_GLOBAL_VARIABLES_DIRECTLY
@@ -88,27 +37,19 @@ namespace dbj {
 
 #undef _CRT_DECLARE_GLOBAL_VARIABLES_DIRECTLY
 
-		// wargv_ !=  nullptr
-		auto decide(std::true_type tt) {
-			return vector_wstrings_type{ wargv_, wargv_ + argc_ };
-		}
-		// wargv_ ==  nullptr
-		auto decide(bool ft) {
-			return vector_strings_type{ argv_, argv_ + argc_ };
-		}
-
-		auto cli_data = []() {
+		auto cli_data = [] ( ) {
 
 			try {
-				auto cli_vector = decide(
-					wargv_
-					? std::true_type{}
-					: false
-				);
-				return cli_vector;
+				if (wargv_) 
+				return make_cli_vector<wchar_t>( wargv_ , argc_ );
+
+				// if (argv_)
+				// return make_cli_vector<char>( argv_, argc_ );
+
+				throw  std::runtime_error(  __FUNCSIG__ " Error: command line arguments are not ready yet");
 			}
 			catch (...) {
-				throw  std::runtime_error("dbj::cli_data() has miserably failed...");
+				throw  std::runtime_error( __FUNCSIG__ " Error: has miserably failed...");
 			}
 
 		};

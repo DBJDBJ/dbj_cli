@@ -18,13 +18,13 @@
     <ClInclude Include="dbj_lib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dbj_crtace.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="steve_wishnousky_cli_data.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dbj_rt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

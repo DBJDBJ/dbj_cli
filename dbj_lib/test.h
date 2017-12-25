@@ -2,7 +2,7 @@
 
 namespace {
 
-	static bool test() {
+	inline bool test() {
 		try {
 			auto cli_data = dbj::cli_data();
 

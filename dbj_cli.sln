@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dbj_lib", "dbj_lib\dbj_lib.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dbj_wmain", "dbj_wmain\dbj_wmain.vcxproj", "{57474A16-000E-46C7-B118-D7AC581D8102}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dbj_dll", "dbj_dll\dbj_dll.vcxproj", "{D89C5FDB-2038-480F-A835-2CFFDCE5699D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{57474A16-000E-46C7-B118-D7AC581D8102}.Release|x64.Build.0 = Release|x64
 		{57474A16-000E-46C7-B118-D7AC581D8102}.Release|x86.ActiveCfg = Release|Win32
 		{57474A16-000E-46C7-B118-D7AC581D8102}.Release|x86.Build.0 = Release|Win32
+		{D89C5FDB-2038-480F-A835-2CFFDCE5699D}.Debug|x64.ActiveCfg = Debug|x64
+		{D89C5FDB-2038-480F-A835-2CFFDCE5699D}.Debug|x64.Build.0 = Debug|x64
+		{D89C5FDB-2038-480F-A835-2CFFDCE5699D}.Debug|x86.ActiveCfg = Debug|Win32
+		{D89C5FDB-2038-480F-A835-2CFFDCE5699D}.Debug|x86.Build.0 = Debug|Win32
+		{D89C5FDB-2038-480F-A835-2CFFDCE5699D}.Release|x64.ActiveCfg = Release|x64
+		{D89C5FDB-2038-480F-A835-2CFFDCE5699D}.Release|x64.Build.0 = Release|x64
+		{D89C5FDB-2038-480F-A835-2CFFDCE5699D}.Release|x86.ActiveCfg = Release|Win32
+		{D89C5FDB-2038-480F-A835-2CFFDCE5699D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

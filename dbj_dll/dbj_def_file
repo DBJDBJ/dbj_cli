@@ -1,0 +1,9 @@
+LIBRARY "dbj_dll"
+EXPORTS
+DBJEPointW	@1
+DBJEPointA	@2
+testA		@3
+testW		@4   
+SetSharedMem @5
+GetSharedMem @6
+

@@ -21,14 +21,16 @@ namespace dbj {
 	using vector_wstrings_type = std::vector<std::wstring>;
 	using vector_strings_type = std::vector<std::string >;
 
-	/*
-	Usage:
-	#error dbj::nicer_filename(__FILE__) " has a problem."
-	TODO: is wide version necessary?
-	*/
-	static __forceinline
-		constexpr auto nicer_filename(const char * filename) {
-		return (strrchr(filename, '\\') ? strrchr(filename, '\\') + 1 : filename);
+	namespace {
+		/*
+		Usage:
+		#error dbj::nicer_filename(__FILE__) " has a problem."
+		TODO: is wide version necessary?
+		*/
+		static __forceinline
+			constexpr auto nicer_filename(const char * filename) {
+			return (strrchr(filename, '\\') ? strrchr(filename, '\\') + 1 : filename);
+		}
 	}
 
 	namespace dbg {

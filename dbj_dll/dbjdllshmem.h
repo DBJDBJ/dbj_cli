@@ -6,6 +6,7 @@
 namespace {
 
 	constexpr auto SHMEMSIZE = 4096;
+	constexpr TCHAR MAP_OBJECT_NAME[]{ TEXT("dllmemfilemap") } ;
 
 	/* 
 	Shared memory can be mapped to a different address in each process.For this reason, 

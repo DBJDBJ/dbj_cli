@@ -70,7 +70,7 @@ namespace dbj {
 // keep it in release builds too
 // #define DBJ_TRACE((void)0)
 
-#pragma region micro print fwork 
+#pragma region micro logging fwork 
 
 namespace {
 	
@@ -93,6 +93,13 @@ namespace dbj {
 
 		class DBJLog final {
 
+			static const bool PIPE_OUT{ true };
+
+			static void write( const std::string & buf_ ) {
+				auto rez = ::puts(buf_.data()) ;
+				_ASSERTE(EOF != rez);
+			}
+
 			/*
 			usage: MyBuf buff; std::ostream stream(&buf); stream << 1 << true << L"X" << std::flush ;
 			*/
@@ -103,10 +110,13 @@ namespace dbj {
 				virtual int sync() {
 					// use this->str() here
 					auto string_trans = this->str();
-#ifndef _WINDOWS
-					// if one wants to pipe/redirect the console output
-					fprintf(stdout, string_trans.data());
-#endif
+
+					if (DBJLog::PIPE_OUT) {
+						// if one wants to pipe/redirect the console output
+						auto rez = ::puts(string_trans.data());
+						_ASSERTE(EOF != rez);
+					}
+
 					_RPT0(_CRT_WARN, string_trans.data());
 					// clear the buffer afterwards
 					this->str("");
@@ -130,7 +140,7 @@ namespace dbj {
 					 stream_type & stream_ = this->stream();
 					 _ASSERTE(stream_.good());
 					 stream_.flush();
-					 this->flushed = !this->flushed;
+					 this->flushed = true;
 			 }
 
 			 ~DBJLog() {

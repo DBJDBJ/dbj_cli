@@ -26,19 +26,18 @@ namespace {
 
 		try {
 			auto result = stwish::cli_data();
-			using type_ = std::decay<
-				decltype(result)::value_type
-			>::type;
-			auto type_name_ = typeid(type_{}).name();
-			dbj::print(
-				"\n\nSTWISH solution\n",
-				"\n\nProgram: ", result[0],
-				"\n\nCommand Line data:", result ,
-				"\n\nType is vector of: ", type_name_
-			);
+			using type_ = typename decltype(result)::value_type ;
+ 			std::string type_name_{ typeid(type_).name() };
+			dbj::print("\n\nSTWISH solution\n");
+			dbj::print("\n\nProgram: ", ( result.size() > 0 ? result[0] : L"Bad Command Line ?" ));
+			dbj::print("\n\nCommand Line data:", result);
+			dbj::print("\n\nType is vector of: ", type_name_);
 		}
 		catch (std::runtime_error & err) {
 			dbj::print("\n", err.what());
+		}
+		catch (...) {
+			dbj::print("\n" __FUNCSIG__ ", unknown exception." );
 		}
 
 

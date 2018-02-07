@@ -76,12 +76,14 @@ namespace {
 	
 	template<typename T> 
 	std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {
+		os << '[';
 		for (auto& el : vec) { os << el << ' '; }
+		os << ']';
 		return os;
 	}
 
 	std::ostream& operator<<(std::ostream& os, const std::wstring & s_ ) {
-		os <<  std::string( s_.begin(), s_.end() ) ; 
+		os <<  std::string( std::begin(s_), std::end( s_) ) ; 
 		return os;
 	}
 
@@ -93,7 +95,7 @@ namespace dbj {
 
 		class DBJLog final {
 
-			static const bool PIPE_OUT{ true };
+			static constexpr bool PIPE_OUT{ true };
 
 			static void write( const std::string & buf_ ) {
 				auto rez = ::puts(buf_.data()) ;
@@ -101,7 +103,9 @@ namespace dbj {
 			}
 
 			/*
-			usage: MyBuf buff; std::ostream stream(&buf); stream << 1 << true << L"X" << std::flush ;
+			usage: MyBuf buff; 
+			std::ostream stream(&buf); 
+			stream << 1 << true << L"X" << std::flush ;
 			*/
 			mutable class DBJBuf final : public std::stringbuf
 			{
@@ -120,7 +124,7 @@ namespace dbj {
 					_RPT0(_CRT_WARN, string_trans.data());
 					// clear the buffer afterwards
 					this->str("");
-								return 1 /*true*/ ;
+					return 1 /*true*/ ;
 				}
 			} buffer_{} ;
 			// mutable  DBJBuf buffer_{};
@@ -134,20 +138,19 @@ namespace dbj {
 				return log_stream_;
 			}
 
-			 mutable bool flushed = false;
-
 			 void flush () {
 					 stream_type & stream_ = this->stream();
 					 _ASSERTE(stream_.good());
 					 stream_.flush();
-					 this->flushed = true;
 			 }
 
 			 ~DBJLog() {
+				 static bool flushed = false;
 				 try {
-					 if (!this->flushed) {
+					if (!flushed) {
 						 this->flush();
-					 }
+						 flushed = true;
+					}
 				 }
 				 catch (... ) {
 					 DBJ_TRACE("\n%s %s\n", __FUNCSIG__, " Unknown exception");
@@ -185,11 +188,18 @@ namespace dbj {
 					return;
 		};
 #endif
-		auto print = [](auto... param)
+		auto print = [](auto p1, auto ... param)
 		{
-			if constexpr (sizeof...(param) > 0) {
-				char dummy[sizeof...(param)] = {
-					(( log.stream() << param), 0)...
+			constexpr auto no_of_args = sizeof...(param);
+			auto & os = log.stream();
+
+			os << p1;
+
+			if constexpr (no_of_args > 0) {
+				char dummy[no_of_args] = {
+					(( 
+						os << param 
+					  ), 0)...
 				};
 			}
 			return print;

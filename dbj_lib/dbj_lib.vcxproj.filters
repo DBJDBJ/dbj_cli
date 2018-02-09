@@ -27,5 +27,8 @@
     <ClInclude Include="dbj_rt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CL_19_12_25835_0.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

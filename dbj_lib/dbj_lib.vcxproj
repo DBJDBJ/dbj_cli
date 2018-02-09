@@ -115,6 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CL_19_12_25835_0.h" />
     <ClInclude Include="dbj_rt.h" />
     <ClInclude Include="dbj_lib.h" />
     <ClInclude Include="steve_wishnousky_cli_data.h" />

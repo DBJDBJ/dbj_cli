@@ -33,5 +33,8 @@
     <ClInclude Include="new_clever_nuggets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dbj_std_arr_handling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

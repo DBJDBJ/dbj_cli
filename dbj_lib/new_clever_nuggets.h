@@ -3,18 +3,34 @@
 #include <algorithm>
 #include <set>
 #include <iterator>
-#include <array>
+#include <functional>
 
 namespace dbj {
 
 	using char_star = decltype("XYZ");
 	using wchar_star = decltype(L"XYZ");
 	/*
+	part of C++20, but also implemented here
+	http://en.cppreference.com/w/cpp/types/remove_cvref
+	*/
+	template< class T >
+	struct remove_cvref {
+		typedef std::remove_cv_t<std::remove_reference_t<T>> type;
+	};
+
+	template< class T >
+	using remove_cvref_t = typename remove_cvref<T>::type;
+
+	/*
 	are two types equal?
 	*/
 	auto eqt = [](auto & a, auto & b) constexpr -> bool
 	{
 		return std::is_same_v< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >;
+		/*
+				this does not catch pointers
+				return std::is_same_v< dbj::remove_cvref_t<decltype(a)>, dbj::remove_cvref_t<decltype(b)> >;
+		*/
 	};
 
 	/*
@@ -23,10 +39,13 @@ namespace dbj {
 	template<typename Type, size_t N, typename outype = std::vector<Type> >
 	inline constexpr outype array_to_vector(const Type(&arr_)[N])
 	{
-		return outype{ arr, arr + N };
+		return outype{ arr_, arr_ + N };
 	}
 
-	auto find = []( auto sequence, auto item) constexpr -> bool {
+	/*
+	find an item in anything that has begin and end iterators
+	*/
+	auto find = [](auto sequence, auto item) constexpr -> bool {
 		return std::find(std::begin(sequence), std::end(sequence), item) != std::end(sequence);
 	};
 
@@ -44,11 +63,11 @@ namespace dbj {
 			);
 
 		if  constexpr(eqt(val_, char_star{})) {
-#pragma message ("val type is char *")
+			// #pragma message ("val type is char *")
 			return starts_with(std::string(val_), std::string(mat_));
 		}
 		else if  constexpr(eqt(val_, wchar_star{})) {
-#pragma message ("val type is wchar_t *")
+			// #pragma message ("val type is wchar_t *")
 			return starts_with(std::wstring(val_), std::wstring(mat_));
 		}
 		else {
@@ -85,7 +104,7 @@ namespace dbj {
 	------------------------------------------------------------------------------------
 	*/
 	template <typename Type>
-	inline std::vector<Type> remove_duplicates(const std::vector<Type> & vec, const bool sort = false ) {
+	inline std::vector<Type> remove_duplicates(const std::vector<Type> & vec, const bool sort = false) {
 
 		if (sort) {
 			/*
@@ -109,51 +128,6 @@ namespace dbj {
 	inline std::vector<Type> remove_duplicates(const Type(&arr_)[N], const bool sort = false) {
 		return remove_duplicates(std::vector<Type>{arr_, arr_ + N}, sort);
 	}
-#if 0
-	/*
-	Create a new vector without the duplicates
-	*and* without sorting involved
-	*/
-	template <typename Type>
-	inline std::vector<Type> remove_duplicates_nosort(std::vector<Type> vec ) {
-		std::vector<Type> unique_chunks{};
-		for (auto x : vec) {
-			if ( ! dbj::find( unique_chunks, x) ) {
-				unique_chunks.push_back(x);
-			}
-		}
-		return unique_chunks;
-	}
-	/*
-	dbj optimized for native arrays
-	*/
-	template<typename Type, size_t N, typename outype = std::vector<Type> >
-	inline outype remove_duplicates_nosort(const Type(&arr_)[N])
-	{
-		std::vector<Type> unique_chunks{};
-		for (auto x : arr_) {
-			if (!dbj::find(unique_chunks, x)) {
-				unique_chunks.push_back(x);
-			}
-		}
-		return unique_chunks;
-	}
-	/*
-	above is classical solution using templates
-	but it requires one overload for each type handled
-	instead why not just use generic lambda ?
-	if sequence argument is not a type which applies, compiler will simply refuse to compile
-	*/
-	auto duplicates_handler = [](auto sequence, bool sort = false) {
-		if (sort) {
-			std::sort(std::begin(sequence), std::end(sequence));
-		}
-		auto iterator_following_the_last_removed_element =
-			sequence.erase(std::unique(std::begin(sequence), std::end(sequence)), std::end(sequence));
-
-		return sequence;
-	};
-#endif
 
 	/*
 	------------------------------------------------------------------------------------
@@ -166,31 +140,23 @@ namespace dbj {
 		return string_pad(std::to_string(number_));
 	};
 
-	template<typename T, size_t N, typename RT = T(&)[N] >
-	RT
-		array_to_array(std::array<T, N> & arr) {
-		// std::string(&ref)[16] = *(std::string(*)[16])(as.data());
-		return *(T(*)[N])(arr.data());
-	}
+
+	/*
+	------------------------------------------------------------------------------------
+	*/
 	inline void quick_test_of_some_new_clever_nuggets() {
+
 		{
+
 			int intarr[]{ 1,1,2,2,3,4,5,6,6,6,7,8,9,9,0,0 };
 			auto ret1 = remove_duplicates(intarr);
-			std::array<std::string, 16> as;
 			std::string as2 [16] {
 				"abra", "ka", "dabra", "babra",
 				"abra", "ka", "dabra", "babra",
 				"abra", "ka", "dabra", "babra",
 				"abra", "ka", "dabra", "babra",
 			};
-			// auto ret2 = remove_duplicates_nosort();
-			/*
-			A arr[N];
-			A (&ref)[N] = *static_cast<A(*)[N]>(&arr);
-			*/
-			// std::string arr[16];
-			// std::string(&ref)[16] = * (std::string(*)[16])(as.data());
-			std::string(&ref)[16] = array_to_array(as);
+	
 			auto ad = dbj::remove_duplicates(as2);
 			char carr[] = { 'c','a','b','c','c','c','d', 0x0 };
 			dbj::remove_duplicates(carr);

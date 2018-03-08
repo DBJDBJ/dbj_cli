@@ -115,6 +115,7 @@ namespace dbj {
 						auto rez = ::puts(string_trans.data());
 #endif
 						_ASSERTE(EOF != rez);
+						(void)rez;
 					}
 
 					_RPT0(_CRT_WARN, string_trans.data());

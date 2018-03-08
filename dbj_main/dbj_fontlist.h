@@ -41,7 +41,7 @@ namespace dbj {
 		     NEWTEXTMETRICEX *lpntm,
 		     DWORD fontType, LPARAM lParam)
 		 {
-		     lpntm;
+		     (void)lpntm;
 		
 		     FontVec* pFontVec = (FontVec*)lParam;
 		     pFontVec->push_back(FontPair(lpelf->elfLogFont, fontType));

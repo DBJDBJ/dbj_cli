@@ -115,7 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CL_19_12_25835_0.h" />
+    <ClInclude Include="lambda_runtime_retval_test.h" />
     <ClInclude Include="dbj_rt.h" />
     <ClInclude Include="dbj_lib.h" />
     <ClInclude Include="dbj_std_arr_handling.h" />

@@ -4,47 +4,48 @@ namespace {
 
 	inline bool test() {
 
-		dbj::print("\nUnicode ", (dbj::unicode ? " is " : "NOT"), " defined");
+		static constexpr const char *  line 
+			= "\n____________________________________________________________________________";
+		static constexpr const char *  timestamp
+			= __TIMESTAMP__;
+		static constexpr auto cl_version = (_MSC_FULL_VER);
 
-		try {
-			auto cli_data = dbj::cli_data();
-			using type_ = std::decay<
-				     decltype(cli_data)::value_type
-			>::type;
-			auto type_name_ = typeid(type_{}).name();
 
-			dbj::print(
-				"\n\nDBJ solution\n",
-				"\n\nProgram: ", cli_data[0],
-				"\n\nCommand Line data:\t", cli_data,
-				"\n\nType is vector of: ", type_name_
-			);
-		}
-		catch (std::runtime_error & err) {
-			dbj::print("\n", err.what());
-		}
+		dbj::print("\n\tCL version:\t\t\t", cl_version);
+		dbj::print("\n\tBuild timestamp:\t\t", timestamp);
+		dbj::print("\n\tUnicode ", (dbj::unicode ? " IS " : "NOT"), " defined");
 
-		try {
-			auto result = stwish::cli_data();
-			using type_ = typename decltype(result)::value_type ;
- 			std::string type_name_{ typeid(type_).name() };
-			dbj::print("\n\nSTWISH solution\n");
-			dbj::print("\n\nProgram: ", ( result.size() > 0 ? result[0] : L"Bad Command Line ?" ));
-			dbj::print("\n\nCommand Line data:", result);
-			dbj::print("\n\nType is vector of: ", type_name_);
-		}
-		catch (std::runtime_error & err) {
-			dbj::print("\n", err.what());
-		}
-		catch (...) {
-			dbj::print("\n" __FUNCSIG__ ", unknown exception." );
-		}
+		auto run = [&]( auto && fun, auto && title ) {
+			try {
+				auto result = fun();
+				using type_ = typename decltype(result)::value_type;
+				std::string type_name_{ typeid(type_).name() };
+				dbj::print(
+					line,
+					"\n\t", title,
+					"\n\tProgram:\t\t\t", (result.size() > 0 ? result[0] : L"Bad Command Line ?"),
+					"\n\tCommand Line data:\t\t", result,
+					"\n\tType is vector of:\n", type_name_
+				);
+			}
+			catch (std::runtime_error & err) {
+				dbj::print("\n\tException:\n", err.what());
+			}
+			catch (...) {
+				dbj::print("\n\tUnknown Xception.");
+			}
+
+		};
+
+
+		run(dbj::cli_data, "DBJ Solution");
+		run(stwish::cli_data, "STWISH Solution");
 
 
 		dbj::print(
-			"\n\n____________________________________________________________________________",
+			line,
 			"\nR&D and testing (c) 2017-2018 by dbj.org",
-			"\n__targv based solution variant by Steve Wishnousky\n\n"
+			"\n__targv based solution variant (c) by Steve Wishnousky\n"
 		);
 
 		return true;

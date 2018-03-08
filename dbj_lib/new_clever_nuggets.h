@@ -49,14 +49,16 @@ namespace dbj {
 		return std::find(std::begin(sequence), std::end(sequence), item) != std::end(sequence);
 	};
 
-
+#ifndef __clang__
 	/*
 	bellow works for all the std:: string types and string view types
 	but it also works for char pointers and wchar_t pointers
 	and it is all inside the single lambda
 	which is fast because redundant code is removed at compile time
+	this is all invaluable for code maintenance
+	all is in "one place", simple and easy to maintain
 	*/
-	auto starts_with = [](auto val_, auto mat_) {
+	auto starts_with = [](auto val_, auto mat_) -> bool {
 
 		static_assert(eqt(val_, mat_),
 			"dbj::does_start [error] arguments not of the same type"
@@ -74,6 +76,8 @@ namespace dbj {
 			return 0 == val_.compare(0, mat_.size(), mat_);
 		}
 	};
+#endif
+
 #if 0
 	/*
 	classical overloading solution
@@ -160,12 +164,17 @@ namespace dbj {
 			auto ad = dbj::remove_duplicates(as2);
 			char carr[] = { 'c','a','b','c','c','c','d', 0x0 };
 			dbj::remove_duplicates(carr);
+#ifdef _DEBUG
 			auto see_mee_here = carr;
+			(void)see_mee_here;
+#endif
 		}
+#ifndef __clang__
 		{
-			auto doesit1 = dbj::starts_with("abra ka dabra", "abra");
-			auto doesit2 = dbj::starts_with(L"abra ka dabra", L"abra");
+			auto doesit1 = dbj::starts_with("abra ka dabra", "abra"); (void)doesit1;
+			auto doesit2 = dbj::starts_with(L"abra ka dabra", L"abra"); (void)doesit2;
 		}
+#endif
 	}
 
 }

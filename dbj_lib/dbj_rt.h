@@ -27,8 +27,7 @@ namespace dbj {
 		#error dbj::nicer_filename(__FILE__) " has a problem."
 		TODO: is wide version necessary?
 		*/
-		static __forceinline
-			constexpr auto nicer_filename(const char * filename) {
+		auto nicer_filename(const char * filename) {
 			return (strrchr(filename, '\\') ? strrchr(filename, '\\') + 1 : filename);
 		}
 	}
@@ -42,10 +41,7 @@ namespace dbj {
 #endif
 
 		/* 
-		    https://stackoverflow.com/questions/451749/is-there-a-trace-statement-for-basic-win32-c
-			no windows.h required 
-
-			ANSI is the default debugger output 
+		ANSI is the default debugger output 
 		*/
 		inline void trace(const char * filename, const unsigned int line, const char* const format, ...)
 		{
@@ -65,9 +61,10 @@ namespace dbj {
 	}
 }
 
+
 #define DBJ_TRACE( format, ...)  dbj::dbg::trace( __FILE__, __LINE__, format, __VA_ARGS__ )
 
-// keep it in release builds too
+// keep it in release builds too, or
 // #define DBJ_TRACE((void)0)
 
 #pragma region micro logging fwork 
@@ -107,9 +104,8 @@ namespace dbj {
 			std::ostream stream(&buf); 
 			stream << 1 << true << L"X" << std::flush ;
 			*/
-			mutable class DBJBuf final : public std::stringbuf
+			mutable struct DBJBuf final : public std::stringbuf
 			{
-			public:
 				// called on stream flush
 				virtual int sync() {
 					// use this->str() here
@@ -144,6 +140,8 @@ namespace dbj {
 					 stream_.flush();
 			 }
 
+			 DBJLog() { this->flush(); }
+
 			 ~DBJLog() {
 				 static bool flushed = false;
 				 try {
@@ -157,50 +155,26 @@ namespace dbj {
 				 }
 			 }
 
-		}  log{} ; // DBJLog
-#if 0
-		// msvc if-constepxr() is not "there yet"
-		// dbj 25DEC17
-		auto out_ = [] (auto & val_) 
-		{
-			auto range_out = [] (auto bgn_, auto end_ ) {
-				auto & walker = bgn_;
-				log.stream("{");
-				while (walker != end_) { log.stream(" "); log.stream(*walker); log.stream(" "); walker++; }
-				log.stream("}");
-			};
-			
-			using val_type = decltype(val_);
+		}  
+			log{} ; // DBJLog made here
 
-			if constexpr( std::is_same_v<val_type, std::wstring>) {
-				log.stream() << ( std::string(val_.begin(), val_.end()) );
-				return;
-			} 
-			if constexpr( std::is_same_v<val_type, vector_wstrings_type > ) {
-				range_out(val_.begin(), val_.end());
-				return;
-			}
-			if constexpr(std::is_same_v<val_type, vector_strings_type > ) {
-				range_out(val_.begin(), val_.end());
-				return;
-			}
-					log.stream() << val_;
-					return;
-		};
-#endif
-		auto print = [](auto p1, auto ... param)
+		auto print = [](auto ... param)
 		{
 			constexpr auto no_of_args = sizeof...(param);
 			auto & os = log.stream();
 
-			os << p1;
-
-			if constexpr (no_of_args > 0) {
+			/* 
+			'constexpr' should not compile here since no_of_args is runtime value
+			perhaps?
+			*/
+			if (no_of_args > 0) {
 				char dummy[no_of_args] = {
 					(( 
 						os << param 
 					  ), 0)...
 				};
+				// remove the annoying warning : unused variable 'dummy' [-Wunused-variable]
+				(void)dummy;
 			}
 			return print;
 		};

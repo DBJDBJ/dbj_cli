@@ -23,7 +23,7 @@ namespace stwish {
 				};
 			}
 			catch (...) {
-				throw std::runtime_error(__FUNCSIG__ " failed..." );
+				throw std::runtime_error(__func__);
 			}
 		};
 	}

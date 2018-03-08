@@ -6,69 +6,63 @@
 namespace dbj {
 	/*
 	------------------------------------------------------------------------------------
-	declare inbuilt array reference to the inbuilt array inside std::array
+	return array reference to the C array inside std::array
+	usage:
 
-	genericaly this is
-	array< T, N > as ;
-	// T is as::value_type
-	T(&ref)[N] = *(T(*)[N](as.data())
+	decltype(auto) iar =
+	internal_array_reference(
+	std::array<int,3>{1,2,3}
+	) ;
 	*/
 	template<typename T, size_t N,
-		typename ARR = std::array<T, N>,
-		typename ART = T[N],
-		typename ARF = ART & ,
-		typename ARP = ART * >
-		constexpr ARF
-		array_to_arf(const std::array<T, N> & arr)
-		// ->ARF
+		typename ARR = std::array<T, N>, /* std::array */
+		typename ART = T[N],    /* C array */
+		typename ARF = ART & ,  /* reference to it */
+		typename ARP = ART * >  /* pointer   to it */
+		constexpr inline
+		ARF
+		internal_array_reference(const std::array<T, N> & arr)
 	{
 		return *(ARP) const_cast<typename ARR::pointer>(arr.data());
 	}
 
+/*
+Array Handler
+
+(c) 2018 by dbj.org
+*/
+template< typename T, size_t N >
+struct ARH
+{
+	// std::array type
+	typedef std::array<T, N> ARR;
+	// inbuilt ARray type
+	typedef T ART[N];
+	// reference to ART
+	typedef ART& ARF;
+	// pointer to ART
+	typedef ART* ARP;
+
 	/*
-	Array Handler
-
-	(c) 2018 by dbj.org
+	return pointer to the underlying array
+	of an instance of std::array<T,N>
 	*/
-	template< typename T, size_t N >
-	struct ARH
+	static constexpr ARP
+		to_arp(const ARR & arr)
 	{
-		// std::array type
-		typedef std::array<T, N> ARR;
-		// inbuilt ARray type
-		typedef T ART[N];
-		// reference to ART
-		typedef ART& ARF;
-		// pointer to ART
-		typedef ART* ARP;
+		return (ARP)const_cast<typename ARR::pointer>(arr.data());
+	}
 
-		/*
-		return pointer to the underlying array
-		of an instance of std::array<T,N>
-		*/
-		static constexpr ARP
-			to_arp(const ARR & arr)
-		{
-			return (ARP)const_cast<typename ARR::pointer>(arr.data());
-		}
-
-		/*
-		return reference to the underlying array
-		of an instance of std::array<T,N>
-		*/
-		static constexpr ARF
-			to_arf(const ARR & arr)
-		{
-			return *(ARP) const_cast<typename ARR::pointer>(arr.data());
-		}
-		/*
-		A arr[N];
-		A (&ref)[N] = *static_cast<A(*)[N]>(&arr);
-		std::string arr[16];
-		std::string(&ref)[16] = * (std::string(*)[16])(as.data());
-		std::string(&ref)[16] = array_to_array(as);
-		*/
-	};
+	/*
+	return reference to the underlying array
+	of an instance of std::array<T,N>
+	*/
+	static constexpr ARF
+		to_arf(const ARR & arr)
+	{
+		return *(ARP) const_cast<typename ARR::pointer>(arr.data());
+	}
+};
 
 	namespace {
 		/*
@@ -84,18 +78,33 @@ namespace dbj {
 
 	inline void test_dbj_std_arr_handling ()
 	{
-		using A16 = ARH<int, 16>;
-		A16::ARR arr;
-		std::generate(
-			arr.begin(), arr.end(), [count = 0]() mutable -> int {
-			return count++;
-		});
-		A16::ARP arp = A16::to_arp(arr);
-		A16::ARF arf = A16::to_arf(arr);
+		{
+			char arr_of_chars[]{ 'A','B','C' };
+			char(&ref_to_arr_of_chars)[3] = arr_of_chars;
+			(void)ref_to_arr_of_chars;
+		}
+		std::array<char,3> three_chars{ 'A','B','C' };
+
+		const char(&uar)[3] = *(char(*)[3])three_chars.data();
+		(void)uar;
+
+using A16 = ARH<int, 16>;
+A16::ARR arr;
+std::generate(
+	arr.begin(), arr.end(), [count = 0]() mutable -> int {
+	return count++;
+});
+A16::ARP arp = A16::to_arp(arr); (void)arp;
+A16::ARF arf = A16::to_arf(arr);  (void)arf;
 
 		auto rdr0 = intrinsic_array_to_vector(arf);
 
-		decltype(auto) arf2 = array_to_arf(arr);
+		/*
+		decltype(auto) bellow reveals the underlying type
+		namely it transform int* to int(&)[]
+		that is reference to c array inside std::array
+		*/
+		decltype(auto) arf2 = internal_array_reference(arr);
 
 		decltype(auto) rdr1 = intrinsic_array_to_vector(arf2);
 

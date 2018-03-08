@@ -9,10 +9,8 @@
 
 int main()
 {
-	lambda_runtime_retval_test::test_();
-
-	dbj::log.flush();
-    return 0;
+		lambda_runtime_retval_test::test_();
+    return EXIT_SUCCESS;
 }
 
 

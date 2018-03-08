@@ -8,6 +8,10 @@ dbj Run Time lib
 #include <iostream>
 #include "dbj_dbg.h"
 
+// this will do      std::ios::sync_with_stdio(false);
+#define DBJLOG_EXCLUSIVE
+
+
 namespace dbj {
 
 	namespace {
@@ -84,17 +88,6 @@ namespace dbj {
 		class DBJLog final {
 
 			static constexpr bool PIPE_OUT{ true };
-
-			template<typename T>
-			static void write( std::basic_string<T> && buf_ ) {
-#ifdef UNICODE
-				auto rez = ::_putws(buf_.data());
-#else
-				auto rez = ::puts(buf_.data());
-#endif
-				_ASSERTE(EOF != rez);
-			}
-
 			/*
 			usage: MyBuf buff; 
 			std::ostream stream(&buf); 
@@ -145,7 +138,12 @@ namespace dbj {
 					 stream_.flush();
 			 }
 
-			 DBJLog() { this->flush(); }
+			 DBJLog() { 
+#ifdef DBJLOG_EXCLUSIVE
+				 std::ios::sync_with_stdio(false);
+#endif
+				 this->flush(); 
+			 }
 
 			 ~DBJLog() {
 				 static bool flushed = false;
@@ -164,17 +162,38 @@ namespace dbj {
 
 		}  
 			log{} ; // DBJLog made here
+#if 0
+			namespace {
 
+				inline void dbjlog_atexit_handler_()
+				{
+					log.~DBJLog() ; // DBJLog destroyed here
+				}
+
+				const auto dummy = ([ ]() {
+					static bool registered = false ;
+
+					if (registered) return true;
+					registered = true;
+
+					const int result_ = std::atexit(dbjlog_atexit_handler_);
+
+					if ( result_ != 0 ) {
+						throw  std::runtime_error("dbjlog_atexit_handler_(), Registration failed!");
+					}
+					return (registered);
+				}());
+			}
+#endif
+		/*
+		just print to the stream as ever
+		*/
 		auto print = [](auto ... param)
 		{
 			constexpr auto no_of_args = sizeof...(param);
 			auto & os = log.stream();
 
-			/* 
-			'constexpr' should not compile here since no_of_args is runtime value
-			perhaps?
-			*/
-			if (no_of_args > 0) {
+			if constexpr (no_of_args > 0) {
 				char dummy[no_of_args] = {
 					(( 
 						os << param 

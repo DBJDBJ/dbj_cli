@@ -5,13 +5,13 @@
 
 
 namespace CL_19_13_26128_0 {
-
+#ifdef __clang__
 	auto does_not_compile = [](auto _string)
 		-> std::vector< decltype(_string) >
 	{
 		return std::vector<decltype(_string)>{_string};
 	};
-
+#endif
 	auto does_compile = [](auto _string)
 		//-> std::vector< decltype(_string) >
 	{

@@ -28,16 +28,16 @@ namespace dbj {
 DBJ: could be optimized with explicit instantiations for char and wchar_t
 */
 template <typename CT>
-inline auto make_cli_vector = [](CT **_arg_p, int _argc) {
+inline auto make_cli_vector = [](CT **_arg_p, std::size_t _argc) {
   return std::vector<std::basic_string<CT>>{_arg_p, _arg_p + _argc};
 };
 
 namespace {
 
 #define _CRT_DECLARE_GLOBAL_VARIABLES_DIRECTLY
-const auto wargv_ = __wargv;
-const auto argv_ = __argv;
-const auto argc_ = __argc;
+const auto wargv_	= __wargv;
+const auto argv_	= __argv;
+const auto argc_	= __argc;
 #undef _CRT_DECLARE_GLOBAL_VARIABLES_DIRECTLY
 
 #if 0
@@ -75,8 +75,7 @@ auto cli_data = []() {
 } // namespace dbj
 
 #pragma region dbj header suffix
-#pragma comment(user, __FILE__                                                 \
-                "(c) 2017,2018 by dbj@dbj.org | Version: " __DATE__ __TIME__)
+#pragma comment(user, __FILE__  "(c) 2017,2018 by dbj@dbj.org | Version: " __DATE__ __TIME__)
 
 /*
 Copyright 2017 by dbj@dbj.org

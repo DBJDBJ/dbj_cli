@@ -33,5 +33,8 @@
     <ClInclude Include="lambda_runtime_retval_test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dbj_dbg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

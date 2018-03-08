@@ -9,12 +9,13 @@ namespace CL_19_13_26128_0 {
 	auto does_not_compile = [](auto _string)
 		-> std::vector< decltype(_string) >
 	{
-		return std::vector<decltype(_string)>{};
+		return std::vector<decltype(_string)>{_string};
 	};
+
 	auto does_compile = [](auto _string)
 		//-> std::vector< decltype(_string) >
 	{
-		return std::vector<decltype(_string)>{};
+		return std::vector<decltype(_string)>{_string};
 	};
 
 	auto if_constexpr = [](auto _string)
@@ -22,11 +23,11 @@ namespace CL_19_13_26128_0 {
 		using string_type = decltype(_string);
 
 		if constexpr (std::is_same<string_type, std::string>::value) {
-			return std::vector<std::string>{};
+			return std::vector<std::string>{_string};
 		}
 		else if constexpr (std::is_same<string_type, std::wstring>::value)
 		{
-			return std::vector<std::wstring>{};
+			return std::vector<std::wstring>{_string};
 		}
 		else {
 			return std::exception(
@@ -78,5 +79,11 @@ namespace lambda_runtime_retval_test {
 
 		auto v1 = CL_19_13_26128_0::does_compile( narrow_ );
 		auto v2 = CL_19_13_26128_0::does_compile( wide_   );
+#ifdef __clang__
+		auto v3 = CL_19_13_26128_0::does_not_compile(narrow_);
+		auto v4 = CL_19_13_26128_0::does_not_compile(wide_);
+#endif
+		auto v5 = CL_19_13_26128_0::if_constexpr(narrow_);
+		auto v6 = CL_19_13_26128_0::if_constexpr(wide_);
 	}
 }

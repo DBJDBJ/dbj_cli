@@ -33,12 +33,11 @@ inline auto make_cli_vector = [](CT **_arg_p, int _argc) {
 };
 
 namespace {
+
 #define _CRT_DECLARE_GLOBAL_VARIABLES_DIRECTLY
-
-const auto wargv_ = std::as_const(__wargv);
-const auto argv_ = std::as_const(__argv);
-const auto argc_ = std::as_const(__argc);
-
+const auto wargv_ = __wargv;
+const auto argv_ = __argv;
+const auto argc_ = __argc;
 #undef _CRT_DECLARE_GLOBAL_VARIABLES_DIRECTLY
 
 #if 0
@@ -67,9 +66,9 @@ auto cli_data = []() {
       return make_cli_vector<char>(argv_, argc_);
 #endif
     // it is not guaranteed by UCRT when command line arguments will be ready
-    throw std::runtime_error("  Command line arguments are not ready yet");
+    throw std::runtime_error( "  Command line arguments are not ready yet");
   } catch (...) {
-    throw std::runtime_error( __FUNCSIG__ "  Has miserably failed..." );
+    throw std::runtime_error( "  dbj cli_data() Has failed..." );
   }
 };
 } // namespace

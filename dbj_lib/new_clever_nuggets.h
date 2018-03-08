@@ -49,7 +49,6 @@ namespace dbj {
 		return std::find(std::begin(sequence), std::end(sequence), item) != std::end(sequence);
 	};
 
-#ifndef __clang__
 	/*
 	bellow works for all the std:: string types and string view types
 	but it also works for char pointers and wchar_t pointers
@@ -76,7 +75,6 @@ namespace dbj {
 			return 0 == val_.compare(0, mat_.size(), mat_);
 		}
 	};
-#endif
 
 #if 0
 	/*
@@ -169,12 +167,10 @@ namespace dbj {
 			(void)see_mee_here;
 #endif
 		}
-#ifndef __clang__
 		{
 			auto doesit1 = dbj::starts_with("abra ka dabra", "abra"); (void)doesit1;
 			auto doesit2 = dbj::starts_with(L"abra ka dabra", L"abra"); (void)doesit2;
 		}
-#endif
 	}
 
 }

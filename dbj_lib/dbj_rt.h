@@ -7,13 +7,29 @@ dbj Run Time lib
 #include <crtdbg.h>
 #include <vector>
 #include <sstream>
+#include <iostream>
 
 namespace dbj {
 
+	namespace {
 #ifdef _UNICODE
 	constexpr auto unicode = true;
+	using outstream_type = std::wostream ;
+	using stringbuf_type = std::wstringbuf;
+	auto && COUT = std::wcout;
+	auto && LEFT_ANGLED = L'[';
+	auto && RGHT_ANGLED = L']';
+	auto && SPACE = L' ';
+	auto && COMMA = L',';
 #else
 	constexpr auto unicode = false;
+	using outstream_type = std::ostream;
+	using stringbuf_type = std::stringbuf;
+	auto && COUT = std::cout;
+	auto && LEFT_ANGLED = '[';
+	auto && RGHT_ANGLED = ']';
+	auto && SPACE = ' ';
+	auto && COMMA = ',';
 #endif
 
 	constexpr auto bufsiz = BUFSIZ * 2;
@@ -21,13 +37,12 @@ namespace dbj {
 	using vector_wstrings_type = std::vector<std::wstring>;
 	using vector_strings_type = std::vector<std::string >;
 
-	namespace {
 		/*
 		Usage:
 		#error dbj::nicer_filename(__FILE__) " has a problem."
 		TODO: is wide version necessary?
 		*/
-		auto nicer_filename(const char * filename) {
+		constexpr auto nicer_filename(const char * filename) {
 			return (strrchr(filename, '\\') ? strrchr(filename, '\\') + 1 : filename);
 		}
 	}
@@ -71,19 +86,26 @@ namespace dbj {
 
 namespace {
 	
-	template<typename T> 
-	std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {
-		os << '[';
-		for (auto& el : vec) { os << el << ', '; }
-		os << ']';
+	 template<typename T> 
+	 inline 
+		 dbj::outstream_type & operator<<(dbj::outstream_type & os, const std::vector<T>& vec) {
+		os <<  dbj::LEFT_ANGLED << dbj::SPACE;
+		for (auto& el : vec) { os << el << dbj::SPACE; }
+		os << dbj::RGHT_ANGLED;
 		return os;
 	}
 
-	std::ostream& operator<<(std::ostream& os, const std::wstring & s_ ) {
+	 inline
+		std::ostream & operator<<(std::ostream & os, const std::wstring & s_ ) {
 		os <<  std::string( std::begin(s_), std::end( s_) ) ; 
 		return os;
 	}
 
+	 inline
+		 std::wostream & operator<<(std::wostream & os, const std::string & s_) {
+		 os << std::wstring(std::begin(s_), std::end(s_));
+		 return os;
+	 }
 };
 
 namespace dbj {
@@ -94,8 +116,13 @@ namespace dbj {
 
 			static constexpr bool PIPE_OUT{ true };
 
-			static void write( const std::string & buf_ ) {
-				auto rez = ::puts(buf_.data()) ;
+			template<typename T>
+			static void write( std::basic_string<T> && buf_ ) {
+#ifdef UNICODE
+				auto rez = ::_putws(buf_.data());
+#else
+				auto rez = ::puts(buf_.data());
+#endif
 				_ASSERTE(EOF != rez);
 			}
 
@@ -104,7 +131,7 @@ namespace dbj {
 			std::ostream stream(&buf); 
 			stream << 1 << true << L"X" << std::flush ;
 			*/
-			mutable struct DBJBuf final : public std::stringbuf
+			mutable struct DBJBuf final : public dbj::stringbuf_type
 			{
 				// called on stream flush
 				virtual int sync() {
@@ -113,13 +140,21 @@ namespace dbj {
 
 					if (DBJLog::PIPE_OUT) {
 						// if one wants to pipe/redirect the console output
+#ifdef UNICODE
+						auto rez = ::_putws(string_trans.data());
+#else
 						auto rez = ::puts(string_trans.data());
+#endif
 						_ASSERTE(EOF != rez);
 					}
 
 					_RPT0(_CRT_WARN, string_trans.data());
 					// clear the buffer afterwards
+#ifdef UNICODE
+					this->str(L"");
+#else
 					this->str("");
+#endif
 					return 1 /*true*/ ;
 				}
 			} buffer_{} ;
@@ -127,10 +162,10 @@ namespace dbj {
 
 		public:
 			
-			typedef std::ostream  stream_type;
+			typedef dbj::outstream_type   stream_type;
 
 			stream_type & stream () noexcept {
-				static std::ostream log_stream_( &buffer_ );
+				static stream_type log_stream_( &buffer_ );
 				return log_stream_;
 			}
 

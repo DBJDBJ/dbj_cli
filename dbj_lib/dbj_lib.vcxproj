@@ -118,7 +118,6 @@
     <ClInclude Include="lambda_runtime_retval_test.h" />
     <ClInclude Include="dbj_rt.h" />
     <ClInclude Include="dbj_lib.h" />
-    <ClInclude Include="dbj_std_arr_handling.h" />
     <ClInclude Include="new_clever_nuggets.h" />
     <ClInclude Include="steve_wishnousky_cli_data.h" />
     <ClInclude Include="test.h" />

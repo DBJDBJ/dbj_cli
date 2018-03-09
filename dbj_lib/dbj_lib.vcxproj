@@ -41,7 +41,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Utility</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>LLVM-vs2014</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -118,8 +118,8 @@
     <ClInclude Include="dbj_dbg.h" />
     <ClInclude Include="lambda_runtime_retval_test.h" />
     <ClInclude Include="dbj_rt.h" />
-    <ClInclude Include="dbj_lib.h" />
-    <ClInclude Include="new_clever_nuggets.h" />
+    <ClInclude Include="dbj_clidata.h" />
+    <ClInclude Include="new_nuggets.h" />
     <ClInclude Include="steve_wishnousky_cli_data.h" />
     <ClInclude Include="test.h" />
   </ItemGroup>

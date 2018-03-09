@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dbj_lib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="steve_wishnousky_cli_data.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -27,13 +24,16 @@
     <ClInclude Include="dbj_rt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="new_clever_nuggets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="lambda_runtime_retval_test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dbj_dbg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="new_nuggets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dbj_clidata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

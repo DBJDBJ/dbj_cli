@@ -34,35 +34,50 @@ inline auto make_cli_vector = [](CT **_arg_p, std::size_t _argc) {
 
 namespace {
 
+	// Note:  In general, either the narrow or wide string variables will be set,
+	// but not both.  These get initialized by the CRT startup sequence before any
+	// user code is executed.  There are cases where any or all of the pointers may
+	// be null during execution.  Do not assume that they are non-null.
+	/*
+	int       __argc = 0;       // The number of arguments in __argv or __wargv
+	char**    __argv = nullptr; // The arguments as narrow strings
+	wchar_t** __wargv = nullptr; // The arguments as wide strings
+	char*     _pgmptr = nullptr; // The name of the program as a narrow string
+	wchar_t*  _wpgmptr = nullptr; // The name of the program as a wide string
+	char*     _acmdln = nullptr; // The raw command line as a narrow string
+	wchar_t*  _wcmdln = nullptr; // The raw command line as a wide string
+	*/
+
 #define _CRT_DECLARE_GLOBAL_VARIABLES_DIRECTLY
-const auto wargv_	= __wargv;
-const auto argv_	= __argv;
-const auto argc_	= __argc;
+	wchar_t** wargv_	= __wargv;
+	char** argv_	= __argv;
+	int argc_	= __argc;
 #undef _CRT_DECLARE_GLOBAL_VARIABLES_DIRECTLY
 
 #if 0
-		/*
-		a problem for MSVC
-		*/
+	/*
+	a problem for MSVC
+	*/
 
-		auto command_line_data = [&]() {
-			if (wargv_ != nullptr) {
-				return std::vector<std::wstring>(wargv_, wargv_ + argc_);
-			}
-			else {
-				return std::vector<std::string>(argv_, argv_ + argc_);
-			}
-		};
-#endif
+	auto cli_data = []() {
+		if (wargv_ != nullptr) {
+			return make_cli_vector<wchar_t>(wargv_, argc_);
+		}
+			
+		if (argv_ != nullptr) {
+		{
+			return make_cli_vector<char>(argv_, argc_);
+		}
+	};
+#else
 auto cli_data = []() {
   try {
-// does not compile in msvc (yet)
-// so until a solution is found we will rely on _UNICODE macro
+// until a solution is found we will rely on _UNICODE macro
 #if _UNICODE
-    if (wargv_) // not guaranteed
+    if (wargv_ != nullptr ) // not guaranteed
       return make_cli_vector<wchar_t>(wargv_, argc_);
 #else
-    if (argv_) // not guaranteed
+    if (argv_ != nullptr) // not guaranteed
       return make_cli_vector<char>(argv_, argc_);
 #endif
     // it is not guaranteed by UCRT when command line arguments will be ready
@@ -71,6 +86,7 @@ auto cli_data = []() {
     throw std::runtime_error( "  dbj cli_data() Has failed..." );
   }
 };
+#endif
 } // namespace
 } // namespace dbj
 

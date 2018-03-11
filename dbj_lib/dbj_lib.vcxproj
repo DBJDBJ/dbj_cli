@@ -47,7 +47,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Utility</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>LLVM-vs2014</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -116,10 +116,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="dbj_dbg.h" />
-    <ClInclude Include="lambda_runtime_retval_test.h" />
-    <ClInclude Include="dbj_rt.h" />
+    <ClInclude Include="dbj_micro_log.h" />
     <ClInclude Include="dbj_clidata.h" />
-    <ClInclude Include="new_nuggets.h" />
     <ClInclude Include="steve_wishnousky_cli_data.h" />
     <ClInclude Include="test.h" />
   </ItemGroup>

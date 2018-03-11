@@ -21,19 +21,13 @@
     <ClInclude Include="test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dbj_rt.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lambda_runtime_retval_test.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="dbj_dbg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="new_nuggets.h">
+    <ClInclude Include="dbj_clidata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dbj_clidata.h">
+    <ClInclude Include="dbj_micro_log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

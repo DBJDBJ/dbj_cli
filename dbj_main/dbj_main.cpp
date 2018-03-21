@@ -3,7 +3,11 @@
 
 #include "stdafx.h"
 
-int main()
+/// <summary>
+/// Decision: always use _tmain 
+/// always build as UNICODE
+/// </summary>
+int _tmain(int argc, TCHAR *argv[], TCHAR *envp[])
 {
     return EXIT_SUCCESS;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
-
+#include <ctime>
+#include <array>
 #include "dbj_micro_log.h"
 #include "dbj_clidata.h"
 #include "steve_wishnousky_cli_data.h"
@@ -14,20 +15,37 @@
 
 
 namespace {
+	namespace detail {
+#pragma warning( push )
+#pragma warning( disable : 4996)
+#define _CRT_SECURE_NO_WARNINGS
+		inline auto timestamp = []()
+			->std::array<char, 100u>
+		{
+			// std::locale::global(std::locale(nullptr));
+			std::time_t t = std::time(nullptr);
+			//char mbstr[100];
+			std::array<char, 100u> mbstr;
+			if (std::strftime(mbstr.data(), mbstr.size(), "%A %c", localtime(&t))) {
+				return mbstr;
+			}
+			throw std::runtime_error("timestamp() -- std::strftime has failed");
+		};
+#pragma warning( pop ) 
+#undef _CRT_SECURE_NO_WARNINGS
+	}
 
 	inline bool test() {
 
 		using namespace dbj;
 
-		static constexpr const char *  line 
-			= "\n____________________________________________________________________________";
-		static constexpr const char *  timestamp
-			= __TIMESTAMP__;
-		static constexpr auto cl_version = (_MSC_FULL_VER);
+		constexpr const char * line
+		{ "\n____________________________________________________________________________" };
+		auto timestamp = detail::timestamp() ;
+		constexpr const int cl_version{ _MSC_FULL_VER };
 
-
-		print("\n\tCL version:\t\t\t", cl_version);
-		print("\n\tBuild timestamp:\t\t", timestamp);
+		print("\n\tCL version:\t\t\t", _MSC_FULL_VER);
+		print("\n\tBuild timestamp:\t\t", timestamp.data());
 		print("\n\tUnicode ", (dbj::unicode ? " IS " : "NOT"), " defined");
 
 		auto run = [&]( auto && fun, auto && title ) {

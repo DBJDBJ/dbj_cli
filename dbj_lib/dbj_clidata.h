@@ -72,7 +72,7 @@ namespace {
 #else
 auto cli_data = []() {
   try {
-// until a solution is found we will rely on _UNICODE macro
+// until a solution is found we will rely on _UNICODE being defined
 #if _UNICODE
     if (wargv_ != nullptr ) // not guaranteed
       return make_cli_vector<wchar_t>(wargv_, argc_);

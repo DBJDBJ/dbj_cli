@@ -23,7 +23,7 @@
     <ProjectGuid>{D89C5FDB-2038-480F-A835-2CFFDCE5699D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>dbjdll</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17110.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

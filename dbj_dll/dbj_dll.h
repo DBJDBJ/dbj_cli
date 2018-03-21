@@ -15,6 +15,8 @@ extern "C" {
 	void __stdcall
 		DBJEPointW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine,
 			int nCmdShow);
+
+	int __stdcall testW(const wchar_t * argv[BUFSIZ], int argc);
 	/*
 	ANSI
 	*/
@@ -23,8 +25,5 @@ extern "C" {
 			int nCmdShow);
 
 	int __stdcall testA(const char * argv[BUFSIZ], int argc);
-
-	int __stdcall testW(const wchar_t * argv[BUFSIZ], int argc);
-
 }
 

@@ -1,5 +1,7 @@
 #pragma once
-
+/*
+Simple dynamic dll loader
+*/
 #ifndef _INC_WINDOWS
 		#define WIN32_LEAN_AND_MEAN
 		#define STRICT

@@ -41,12 +41,7 @@ namespace dbj {
 	using vector_strings_type = std::vector<std::string >;
 
 	} // ns
-
-
 }
-
-
-
 
 #pragma region micro logging fwork 
 
@@ -60,8 +55,7 @@ namespace {
 	}
 	
 	 template<typename T> 
-	 inline 
-		 dbj::outstream_type & operator<<(dbj::outstream_type & os, const std::vector<T>& vec) {
+	 inline dbj::outstream_type & operator<<(dbj::outstream_type & os, const std::vector<T>& vec) {
 		os <<  dbj::LEFT_ANGLED << dbj::SPACE;
 		for (auto& el : vec) { os << el << dbj::SPACE; }
 		os << dbj::RGHT_ANGLED;
@@ -162,29 +156,7 @@ namespace dbj {
 
 		}  
 			log{} ; // DBJLog made here
-#if 0
-			namespace {
 
-				inline void dbjlog_atexit_handler_()
-				{
-					log.~DBJLog() ; // DBJLog destroyed here
-				}
-
-				const auto dummy = ([ ]() {
-					static bool registered = false ;
-
-					if (registered) return true;
-					registered = true;
-
-					const int result_ = std::atexit(dbjlog_atexit_handler_);
-
-					if ( result_ != 0 ) {
-						throw  std::runtime_error("dbjlog_atexit_handler_(), Registration failed!");
-					}
-					return (registered);
-				}());
-			}
-#endif
 		/*
 		just print to the stream as ever
 		*/

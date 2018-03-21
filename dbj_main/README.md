@@ -1,3 +1,3 @@
 # dbj_cli
 
-## testing the ANSI console situation
+## testing the CLI solutions in the console situation

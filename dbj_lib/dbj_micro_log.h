@@ -16,23 +16,16 @@ namespace dbj {
 
 	namespace {
 #ifdef _UNICODE
-	constexpr auto unicode = true;
+	inline constexpr auto unicode = true;
 	using outstream_type = std::wostream ;
 	using stringbuf_type = std::wstringbuf;
-	auto && COUT = std::wcout;
-	auto && LEFT_ANGLED = L'[';
-	auto && RGHT_ANGLED = L']';
-	auto && SPACE = L' ';
-	auto && COMMA = L',';
+	inline auto && COUT = std::wcout;
+	inline auto && LEFT_ANGLED = L'[';
+	inline auto && RGHT_ANGLED = L']';
+	inline auto && SPACE = L' ';
+	inline auto && COMMA = L',';
 #else
-	constexpr auto unicode = false;
-	using outstream_type = std::ostream;
-	using stringbuf_type = std::stringbuf;
-	auto && COUT = std::cout;
-	auto && LEFT_ANGLED = '[';
-	auto && RGHT_ANGLED = ']';
-	auto && SPACE = ' ';
-	auto && COMMA = ',';
+#error "Just UNICODE builds please :)"
 #endif
 
 	constexpr auto bufsiz = BUFSIZ * 2;
@@ -46,14 +39,14 @@ namespace dbj {
 #pragma region micro logging fwork 
 
 namespace {
-
+#if 0
 	template<typename IT, typename UF>
 	inline void range_out(dbj::outstream_type & os, IT && first_, IT && last_, UF && unary_fun_ ) {
 		for (; first_ != last_; ++first_) {
 			unary_fun_( os , (*first)) ;
 		}
 	}
-	
+#endif	
 	 template<typename T> 
 	 inline dbj::outstream_type & operator<<(dbj::outstream_type & os, const std::vector<T>& vec) {
 		os <<  dbj::LEFT_ANGLED << dbj::SPACE;
@@ -96,22 +89,14 @@ namespace dbj {
 
 					if (DBJLog::PIPE_OUT) {
 						// if one wants to pipe/redirect the console output
-#ifdef UNICODE
 						auto rez = ::_putws(string_trans.data());
-#else
-						auto rez = ::puts(string_trans.data());
-#endif
 						_ASSERTE(EOF != rez);
 						(void)rez;
 					}
 
 					_RPT0(_CRT_WARN, string_trans.data());
 					// clear the buffer afterwards
-#ifdef UNICODE
 					this->str(L"");
-#else
-					this->str("");
-#endif
 					return 1 /*true*/ ;
 				}
 			} buffer_{} ;
@@ -184,7 +169,7 @@ namespace dbj {
 #pragma endregion
 
 #pragma region standard header suffix 
-#pragma comment( user, __FILE__ "(c) 2017 by dbj@dbj.org | Version: " __DATE__ __TIME__ ) 
+#pragma comment( user, __FILE__ "(c) 2017,2018 by dbj@dbj.org | Version: " __DATE__ __TIME__ ) 
 
 /*
 Copyright 2017 by dbj@dbj.org

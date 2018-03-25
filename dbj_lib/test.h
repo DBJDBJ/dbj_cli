@@ -1,8 +1,5 @@
 #pragma once
 
-#include <ctime>
-#include <array>
-#include <chrono>
 #include "dbj_micro_log.h"
 #include "dbj_clidata.h"
 #include "steve_wishnousky_cli_data.h"
@@ -16,47 +13,7 @@
 
 
 namespace {
-	namespace chronos {
-
-		using namespace std;
-
-		inline constexpr auto BUFSIZE = 1024u;
-		typedef array<char, BUFSIZE>  char_buffer ;
-		typedef std::chrono::time_point<std::chrono::system_clock>  system_time_point;
-
-
-		std::time_t systemtime_now()
-		{
-			system_time_point system_now = std::chrono::system_clock::now();
-			return std::chrono::system_clock::to_time_t(system_now);
-		}
-
-		/// <summary>
-		/// Apparently this is thread safe
-		/// </summary>
-		/// <param name="time">our own std::time_t buffer</param>
-		/// <returns>std::tm snapshot</returns>
-		inline tm localtime( std::time_t time = 0 )
-		{
-			std::tm tm_snapshot;
-			if (time == 0) time = systemtime_now();
-			localtime_s(&tm_snapshot, (&time));
-			return tm_snapshot;
-		}
-
-		inline char_buffer timestamp ()
-		{
-			// locale::global(locale(nullptr));
-			// time_t t = time(nullptr);
-			// std::time_t tt_{};
-			const auto lt_ = & localtime();
-			char_buffer mbstr;
-			if (strftime(mbstr.data(), mbstr.size(), "%c", lt_ )) {
-				return mbstr;
-			}
-			throw runtime_error("timestamp() -- strftime has failed");
-		}
-	}
+	
 
 	inline bool test() {
 
@@ -64,7 +21,7 @@ namespace {
 
 		constexpr const char * line
 		{ "\n____________________________________________________________________________" };
-		auto timestamp = chronos::timestamp() ;
+		auto timestamp =  dbj::god_of_time::timestamp() ;
 		constexpr const int cl_version{ _MSC_FULL_VER };
 
 		print("\n\tCL version:\t\t\t", _MSC_FULL_VER);

@@ -2,10 +2,12 @@
 /*
 dbj Run Time lib
 */
-
+#include <ctime>
+#include <array>
+#include <chrono>
 #include <vector>
 #include <sstream>
-#include <iostream>
+// #include <iostream>
 #include "dbj_dbg.h"
 
 // this will do      std::ios::sync_with_stdio(false);
@@ -19,7 +21,7 @@ namespace dbj {
 	inline constexpr auto unicode = true;
 	using outstream_type = std::wostream ;
 	using stringbuf_type = std::wstringbuf;
-	inline auto && COUT = std::wcout;
+//	inline auto && COUT = std::wcout;
 	inline auto && LEFT_ANGLED = L'[';
 	inline auto && RGHT_ANGLED = L']';
 	inline auto && SPACE = L' ';
@@ -34,6 +36,48 @@ namespace dbj {
 	using vector_strings_type = std::vector<std::string >;
 
 	} // ns
+
+	namespace god_of_time {
+
+		using namespace std;
+
+		inline constexpr auto BUFSIZE = 1024u;
+		typedef array<char, BUFSIZE>  char_buffer;
+		typedef std::chrono::time_point<std::chrono::system_clock>  system_time_point;
+
+
+		inline std::time_t systemtime_now()
+		{
+			system_time_point system_now = std::chrono::system_clock::now();
+			return std::chrono::system_clock::to_time_t(system_now);
+		}
+
+		/// <summary>
+		/// Apparently this is thread safe
+		/// </summary>
+		/// <param name="time">our own std::time_t buffer</param>
+		/// <returns>std::tm snapshot</returns>
+		inline tm localtime(std::time_t time = 0)
+		{
+			std::tm tm_snapshot;
+			if (time == 0) time = systemtime_now();
+			localtime_s(&tm_snapshot, (&time));
+			return tm_snapshot;
+		}
+
+		inline char_buffer timestamp()
+		{
+			// locale::global(locale(nullptr));
+			// time_t t = time(nullptr);
+			// std::time_t tt_{};
+			const auto lt_ = &localtime();
+			char_buffer mbstr;
+			if (strftime(mbstr.data(), mbstr.size(), "%c", lt_)) {
+				return mbstr;
+			}
+			throw runtime_error("timestamp() -- strftime has failed");
+		}
+	}
 }
 
 #pragma region micro logging fwork 
@@ -74,7 +118,8 @@ namespace dbj {
 
 		class DBJLog final {
 
-			static constexpr bool PIPE_OUT{ true };
+			static constexpr bool PIPE_OUT { true };
+			static constexpr bool TIMESTAMP{ false };
 			/*
 			usage: MyBuf buff; 
 			std::ostream stream(&buf); 
@@ -151,6 +196,10 @@ namespace dbj {
 			auto & os = log.stream();
 
 			if constexpr (no_of_args > 0) {
+
+				if (DBJLog::TIMESTAMP) os << std::endl 
+					<< dbj::god_of_time::timestamp().data() << " : ";
+
 				char dummy[no_of_args] = {
 					(( 
 						os << param 

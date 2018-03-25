@@ -60,24 +60,25 @@ namespace {
 	*/
 
 	auto cli_data = []() {
-		if (wargv_ != nullptr) {
+		if (wargv_[0] != nullptr) {
 			return make_cli_vector<wchar_t>(wargv_, argc_);
 		}
 			
-		if (argv_ != nullptr) {
-		{
-			return make_cli_vector<char>(argv_, argc_);
+		if (argv_[0] != nullptr) 	{
+			auto wv = make_cli_vector<char>(argv_, argc_);
+		
 		}
 	};
 #else
 auto cli_data = []() {
   try {
-// until a solution is found we will rely on _UNICODE being defined
+// this is not good since we do depend on 
+// _UNICODE macro
 #if _UNICODE
-    if (wargv_ != nullptr ) // not guaranteed
+    if (wargv_[0] != nullptr ) // not guaranteed
       return make_cli_vector<wchar_t>(wargv_, argc_);
 #else
-    if (argv_ != nullptr) // not guaranteed
+    if (argv_[0] != nullptr) // not guaranteed
       return make_cli_vector<char>(argv_, argc_);
 #endif
     // it is not guaranteed by UCRT when command line arguments will be ready

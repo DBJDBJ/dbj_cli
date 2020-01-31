@@ -8,32 +8,33 @@ dbj Run Time lib
 #include <vector>
 #include <sstream>
 // #include <iostream>
+#include <string_view>
 #include "dbj_dbg.h"
 
 // this will do      std::ios::sync_with_stdio(false);
-#define DBJLOG_EXCLUSIVE
+#define DBJ_LOG_EXCLUSIVE
 
 
 namespace dbj {
 
-	namespace {
+	namespace detail {
 #ifdef _UNICODE
-	inline constexpr auto unicode = true;
-	using outstream_type = std::wostream ;
-	using stringbuf_type = std::wstringbuf;
-//	inline auto && COUT = std::wcout;
-	inline auto && LEFT_ANGLED = L'[';
-	inline auto && RGHT_ANGLED = L']';
-	inline auto && SPACE = L' ';
-	inline auto && COMMA = L',';
+		constexpr auto unicode = true;
+		using outstream_type = std::wostream;
+		using stringbuf_type = std::wstringbuf;
+		//	inline auto && COUT = std::wcout;
+		constexpr auto LEFT_ANGLED = L'[';
+		constexpr auto RGHT_ANGLED = L']';
+		constexpr auto SPACE = L' ';
+		constexpr auto COMMA = L',';
 #else
 #error "Just UNICODE builds please :)"
 #endif
 
-	constexpr auto bufsiz = BUFSIZ * 2;
+		constexpr auto bufsiz = BUFSIZ * 2;
 
-	using vector_wstrings_type = std::vector<std::wstring>;
-	using vector_strings_type = std::vector<std::string >;
+		using vector_wstrings_type = std::vector<std::wstring>;
+		using vector_strings_type = std::vector<std::string >;
 
 	} // ns
 
@@ -41,7 +42,7 @@ namespace dbj {
 
 		using namespace std;
 
-		inline constexpr auto BUFSIZE = 1024u;
+		constexpr auto BUFSIZE = 1024u;
 		typedef array<char, BUFSIZE>  char_buffer;
 		typedef std::chrono::time_point<std::chrono::system_clock>  system_time_point;
 
@@ -77,62 +78,64 @@ namespace dbj {
 			}
 			throw runtime_error("timestamp() -- strftime has failed");
 		}
-	}
-}
+	} // god_of_time
+} // dbj
 
 #pragma region micro logging fwork 
+// namespace {
 
-namespace {
-#if 0
-	template<typename IT, typename UF>
-	inline void range_out(dbj::outstream_type & os, IT && first_, IT && last_, UF && unary_fun_ ) {
-		for (; first_ != last_; ++first_) {
-			unary_fun_( os , (*first)) ;
-		}
-	}
-#endif	
-	 template<typename T> 
-	 inline dbj::outstream_type & operator<<(dbj::outstream_type & os, const std::vector<T>& vec) {
-		os <<  dbj::LEFT_ANGLED << dbj::SPACE;
-		for (auto& el : vec) { os << el << dbj::SPACE; }
-		os << dbj::RGHT_ANGLED;
-		return os;
-	}
+template<typename T>
+inline dbj::detail::outstream_type& operator<<(dbj::detail::outstream_type& os, const std::vector<T>& vec) {
+	os << dbj::detail::LEFT_ANGLED << dbj::detail::SPACE;
+	for (auto& el : vec) { os << el << dbj::detail::SPACE; }
+	os << dbj::detail::RGHT_ANGLED;
+	return os;
+}
 
-	 inline
-		std::ostream & operator<<(std::ostream & os, const std::wstring & s_ ) {
-		os <<  std::string( std::begin(s_), std::end( s_) ) ; 
-		return os;
-	}
+inline
+std::ostream& operator<<(std::ostream& os, std::wstring_view s_) {
+	os << std::string(
+		(char*)(s_.data()),
+		(char*)(s_.data() + s_.size())
+	).c_str();
+	return os;
+}
 
-	 inline
-		 std::wostream & operator<<(std::wostream & os, const std::string & s_) {
-		 os << std::wstring(std::begin(s_), std::end(s_));
-		 return os;
-	 }
-};
+inline
+std::wostream& operator<<(std::wostream& os, std::string_view s_) {
+	os << std::wstring(
+		(wchar_t*)(s_.data()),
+		(wchar_t*)(s_.data() + s_.size())
+	).c_str();
+	return os;
+}
+// };
 
 namespace dbj {
 
-	namespace {
+	namespace detail {
 
-		class DBJLog final {
+		struct dbj_log_type final {
 
-			static constexpr bool PIPE_OUT { true };
+			static constexpr bool PIPE_OUT{ true };
 			static constexpr bool TIMESTAMP{ false };
 			/*
-			usage: MyBuf buff; 
-			std::ostream stream(&buf); 
+			usage: DBJBuf buff;
+			std::ostream stream(&buf);
 			stream << 1 << true << L"X" << std::flush ;
+
+			DBJBuf is a stream target. On flush it's method sync()
+			is called.
+
 			*/
-			mutable struct DBJBuf final : public dbj::stringbuf_type
+			mutable struct DBJBuf final : public dbj::detail::stringbuf_type
 			{
 				// called on stream flush
 				virtual int sync() {
 					// use this->str() here
 					auto string_trans = this->str();
 
-					if (DBJLog::PIPE_OUT) {
+					if (dbj_log_type::PIPE_OUT) {
 						// if one wants to pipe/redirect the console output
 						auto rez = ::_putws(string_trans.data());
 						_ASSERTE(EOF != rez);
@@ -142,99 +145,90 @@ namespace dbj {
 					_RPT0(_CRT_WARN, string_trans.data());
 					// clear the buffer afterwards
 					this->str(L"");
-					return 1 /*true*/ ;
+					return 1 /*true*/;
 				}
-			} buffer_{} ;
+			} buffer_{};
 			// mutable  DBJBuf buffer_{};
 
 		public:
-			
-			typedef dbj::outstream_type   stream_type;
 
-			stream_type & stream () noexcept {
-				static stream_type log_stream_( &buffer_ );
-				return log_stream_;
+			typedef dbj::detail::outstream_type   stream_type;
+
+			stream_type& stream() noexcept {
+				static stream_type single_log_instance__stream_(&buffer_);
+				return single_log_instance__stream_;
 			}
 
-			 void flush () {
-					 stream_type & stream_ = this->stream();
-					 _ASSERTE(stream_.good());
-					 stream_.flush();
-			 }
+			void flush() {
+				stream_type& stream_ = this->stream();
+				_ASSERTE(stream_.good());
+				stream_.flush();
+			}
 
-			 DBJLog() { 
-#ifdef DBJLOG_EXCLUSIVE
-				 std::ios::sync_with_stdio(false);
+			dbj_log_type() {
+#ifdef DBJ_LOG_EXCLUSIVE
+				std::ios::sync_with_stdio(false);
 #endif
-				 this->flush(); 
-			 }
+				this->flush();
+			}
 
-			 ~DBJLog() {
-				 static bool flushed = false;
-				 try {
+			~dbj_log_type() {
+				static bool flushed = false;
+				try {
 					if (!flushed) {
-						 this->flush();
-						 flushed = true;
+						this->flush();
+						flushed = true;
+						// by hand once more
+						// for a good measure
+						buffer_.sync(); 
 					}
-				 }
-				 catch (... ) {
+				}
+				catch (...) {
 #if _DEBUG
-					 DBJ_TRACE ( __func__, " Unknown exception");
+					DBJ_TRACE(__func__, " Unknown exception");
 #endif
-				 }
-			 }
+				}
+			}
 
-		}  
-			log{} ; // DBJLog made here
+		}; // dbj_log_type
 
-		/*
-		just print to the stream as ever
-		*/
-		auto print = [](auto ... param)
+		inline dbj_log_type single_log_instance_{}; // dbj_log_type instance made here
+
+	/*
+	just print to the stream as ever
+	*/
+		inline auto print = [](auto ... param)
 		{
 			constexpr auto no_of_args = sizeof...(param);
-			auto & os = log.stream();
+			auto& os = single_log_instance_.stream();
 
 			if constexpr (no_of_args > 0) {
 
-				if (DBJLog::TIMESTAMP) os << std::endl 
-					<< dbj::god_of_time::timestamp().data() << " : ";
+				if (dbj_log_type::TIMESTAMP) 
+					os << "\n" << dbj::god_of_time::timestamp().data() << " : ";
 
-				char dummy[no_of_args] = {
-					(( 
-						os << param 
+				volatile char dummy[no_of_args] = {
+					((
+						os << param
 					  ), 0)...
 				};
 				// remove the annoying warning : unused variable 'dummy' [-Wunused-variable]
 				(void)dummy;
 			}
+			os << std::flush; // provokes output from dbj buffer that is os target
 #ifndef __clang__
 			return print;
 #endif
 		};
-	} // nspace
+	} // detail nspace
 } // dbj
 
 #pragma endregion
 
 #pragma region standard header suffix 
-#pragma comment( user, __FILE__ "(c) 2017,2018 by dbj@dbj.org | Version: " __DATE__ __TIME__ ) 
+#pragma comment( user, __FILE__ "(c) 2017...2020 by dbj@dbj.org | Version: " __DATE__ __TIME__ ) 
 
 /*
-Copyright 2017 by dbj@dbj.org
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http ://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-inspirators are mentioned in the comments bellow
+Copyright 2017-2020 by dbj@dbj.org  CC BY SA 4.0
 */
 #pragma endregion

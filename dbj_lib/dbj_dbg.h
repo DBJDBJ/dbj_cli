@@ -28,7 +28,7 @@ namespace dbj::dbg {
 	inline void trace(const char * filename, const unsigned int line, const char* const format, ...)
 	{
 		std::vector<char> buffer(TRACEMAXSTRING, '\x0');
-		const auto nicer_name = dbj::dbg::nicer_filename(filename);
+		const auto nicer_name = nicer_filename(filename);
 		_ASSERTE(nicer_name);
 		_snprintf_s(&buffer[0], buffer.size(), TRACEMAXSTRING - 1, "%s(%d): ", nicer_name, line);
 		_RPT0(_CRT_WARN, buffer.data());

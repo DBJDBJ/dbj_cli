@@ -1,6 +1,6 @@
 # dbj_cli
 
-## Generic modern way to obtain CLI data for C++17 clients
+## CLI data for C++17 clients
 
 #### The History (2017)
 
@@ -57,22 +57,8 @@ Steve Wishnousky (@stwish) solution, seems better. But it just hides the same is
 
 #### The Solution 2020
 
-Probably it might be impossible when one fo the two will be nullptr or not. Thus why do not we try and receive 
-std vector result from both?
-
-```cpp
-///
-// can be called before (or after) main
-// thus UCRT can not guarantee __argv or __wargv will be ready or not
-//
-auto [narrow, wide ] = dbj::cli_sequence () ;
-
-   if ( narrow.size() )
-      // __argv worketh
-   if ( wide.size() )
-      // __wargv worketh 
-```
-And this leads to a simple code.
+Probably it might be impossible when any one of the two might be nullptr or not. So. Why do not we try and receive 
+std vector results from both? And this leads to a simple code.
 ```cpp
 	struct cli_data_rettype final 
 	{
@@ -100,15 +86,15 @@ And simple but efective usage
 
 ```cpp
 
-	auto [ w_cli, n_cli   ] = dbj::cli_almost_certain();
+	auto [ wide_cl_args, narrow_cl_args   ] = dbj::cli_almost_certain();
 
-	if (w_cli.size())
+	if (wide_cl_args.size())
 		dbj::detail::print(w_cli); // vector printing routine
 
-	if (n_cli.size())
+	if (narrow_cl_args.size())
 		dbj::detail::print(n_cli);
 
 ```
 
-Of course this call migh be happening anytime , thus both `__argv` and `__wargv` might be nullptr.
+Of course this call migh be happening anytime , thus both `__argv` and `__wargv` might be `nullptr`.
 Which will produce two empty vectors.

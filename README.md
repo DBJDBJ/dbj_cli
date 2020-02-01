@@ -2,9 +2,11 @@
 
 ## Generic modern way to obtain CLI data for C++17 clients
 
-Snazzy C++ code actually using properly a proper, std::vector ctor.
+#### The History (2017)
 
-DBJ way is not that good, since it depends on the _UNICODE macro.
+I somehow stumbled upon snazzy C++ code, actually just using properly a proper, std::vector ctor in combination with comand line arguments that every terminal, console or gui app contains.
+
+My way is not that good, since it depends on the _UNICODE macro.
 ```cpp
 
 template <typename CT>
@@ -29,7 +31,7 @@ auto cli_data = []() {
 };
 ```
 
-Steve Wishnousky (@stwish) seems better. But it just hides the same issue with _TCHAR macro.
+Steve Wishnousky (@stwish) solution, seems better. But it just hides the same issue with _TCHAR macro.
 
 ```cpp
 	using vector_tstring_type = std::vector<std::basic_string<_TCHAR> >;
@@ -52,3 +54,61 @@ Steve Wishnousky (@stwish) seems better. But it just hides the same issue with _
 		};
 	}
 ```
+
+#### The Solution 2020
+
+Probably it might be impossible when one fo the two will be nullptr or not. Thus why do not we try and receive 
+std vector result from both?
+
+```cpp
+///
+// can be called before (or after) main
+// thus UCRT can not guarantee __argv or __wargv will be ready or not
+//
+auto [narrow, wide ] = dbj::cli_sequence () ;
+
+   if ( narrow.size() )
+      // __argv worketh
+   if ( wide.size() )
+      // __wargv worketh 
+```
+And this leads to a simple code.
+```cpp
+	struct cli_data_rettype final 
+	{
+		using wide_type = std::vector<std::wstring>;
+		using narrow_type = std::vector<std::string >;
+
+		wide_type wide{};
+		narrow_type narrow{};
+	};
+
+	inline cli_data_rettype cli_almost_certain() 
+	{
+		cli_data_rettype retval{};
+
+		if (wargv_)
+			retval.wide = cli_data_rettype::wide_type{ wargv_, wargv_ + argc_ };
+
+		if (argv_)
+			retval.narrow = cli_data_rettype::narrow_type{ argv_, argv_ + argc_ };
+
+		return retval;
+	}
+```
+And simple but efective usage
+
+```cpp
+
+	auto [ w_cli, n_cli   ] = dbj::cli_almost_certain();
+
+	if (w_cli.size())
+		dbj::detail::print(w_cli); // vector printing routine
+
+	if (n_cli.size())
+		dbj::detail::print(n_cli);
+
+```
+
+Of course this call migh be happening anytime , thus both `__argv` and `__wargv` might be nullptr.
+Which will produce two empty vectors.

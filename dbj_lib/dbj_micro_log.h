@@ -84,14 +84,6 @@ namespace dbj {
 #pragma region micro logging fwork 
 // namespace {
 
-template<typename T>
-inline dbj::detail::outstream_type& operator<<(dbj::detail::outstream_type& os, const std::vector<T>& vec) {
-	os << dbj::detail::LEFT_ANGLED << dbj::detail::SPACE;
-	for (auto& el : vec) { os << el << dbj::detail::SPACE; }
-	os << dbj::detail::RGHT_ANGLED;
-	return os;
-}
-
 inline
 std::ostream& operator<<(std::ostream& os, std::wstring_view s_) {
 	os << std::string(
@@ -109,6 +101,15 @@ std::wostream& operator<<(std::wostream& os, std::string_view s_) {
 	).c_str();
 	return os;
 }
+
+template<typename T>
+inline dbj::detail::outstream_type& operator<<(dbj::detail::outstream_type& os, const std::vector<T>& vec) {
+	os << dbj::detail::LEFT_ANGLED << dbj::detail::SPACE;
+	for (auto& el : vec) { os << el << dbj::detail::SPACE; }
+	os << dbj::detail::RGHT_ANGLED;
+	return os;
+}
+
 // };
 
 namespace dbj {

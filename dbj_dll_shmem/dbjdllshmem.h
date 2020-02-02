@@ -31,42 +31,11 @@ extern "C" {          // we need to export the C interface
 
 	/// dbj_set_shared_mem sets the contents of the shared memory 
 	__declspec(dllexport)
-	 inline VOID __stdcall dbj_set_shared_mem(LPWSTR lpszBuf, DWORD cchSize )
-	{
-		assert(cchSize < SHMEMSIZE);
-
-		LPWSTR lpszTmp = 0 ;
-		DWORD dwCount = 0;
-
-		// Get the address of the shared memory block
-		lpszTmp = (LPWSTR)dbj_global_shmem_pointer()  ;
-
-		assert(lpszTmp);
-
-		// Copy the NOT-null-terminated string into shared memory
-		while ( dwCount< cchSize )
-		{
-			*lpszTmp++ = *lpszBuf++;
-			dwCount++;
-		}
-		// at the terminator for a good measure
-		*lpszTmp = '\0';
-	}
+		inline VOID __stdcall dbj_set_shared_mem(LPWSTR /*lpszBuf*/, DWORD /*cchSize*/);
 
 	/// dbj_get_shared_mem gets the contents of the shared memory
 	__declspec(dllexport)
-		inline VOID __stdcall dbj_get_shared_mem(LPWSTR lpszBuf, DWORD cchSize)
-	{
-		LPWSTR lpszTmp;
-
-		// Get the address of the shared memory block
-		lpszTmp = (LPWSTR)dbj_global_shmem_pointer() ;
-
-		// Copy from shared memory into the caller's buffer
-		while (*lpszTmp && --cchSize)
-			*lpszBuf++ = *lpszTmp++;
-		*lpszBuf = '\0';
-	}
+		inline VOID __stdcall dbj_get_shared_mem(LPWSTR /*lpszBuf*/, DWORD /*cchSize*/);
 #ifdef __cplusplus
 }
 #endif

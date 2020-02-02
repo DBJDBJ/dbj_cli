@@ -91,46 +91,32 @@ namespace dbj {
 #endif
 	} // namespace
 
-	struct cli_data_rettype final 
+	///-----------------------------------------------------------------------------
+	struct cli_arguments_vectors final
 	{
-		using wide_type = std::vector<std::wstring>;
-		using narrow_type = std::vector<std::string >;
+		using wide_type = std::vector<wchar_t* >;
+		using narrow_type = std::vector<char*  >;
 
 		wide_type wide{};
 		narrow_type narrow{};
 	};
 
-	inline cli_data_rettype cli_almost_certain() 
+	inline cli_arguments_vectors cli_arguments()
 	{
-		cli_data_rettype retval{};
+		cli_arguments_vectors retval{};
 
 		if (wargv_)
-			retval.wide = cli_data_rettype::wide_type{ wargv_, wargv_ + argc_ };
+			retval.wide = cli_arguments_vectors::wide_type( __wargv, __wargv + argc_ );
 
 		if (argv_)
-			retval.narrow = cli_data_rettype::narrow_type{ argv_, argv_ + argc_ };
+			retval.narrow = cli_arguments_vectors::narrow_type( __argv, __argv + argc_ );
 
 		return retval;
 	}
+	
 
 } // namespace dbj
 
 #pragma region dbj header suffix
-#pragma comment(user, __FILE__  "(c) 2017,2018 by dbj@dbj.org | Version: " __DATE__ __TIME__)
-
-/*
-Copyright 2017 by dbj@dbj.org
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http ://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+#pragma comment(user, __FILE__  "(c) 2017 - 2020 by dbj@dbj.org | Version: " __DATE__ __TIME__)
 #pragma endregion

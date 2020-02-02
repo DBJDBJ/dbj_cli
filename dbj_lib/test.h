@@ -24,27 +24,27 @@ namespace dbj {
 		auto timestamp =  dbj::god_of_time::timestamp() ;
 		constexpr const int cl_version{ _MSC_FULL_VER };
 
-		detail::print("\n\tCL version:\t\t\t", _MSC_FULL_VER);
-		detail::print("\n\tBuild timestamp:\t\t", timestamp.data());
-		detail::print("\n\tUnicode ", (dbj::detail::unicode ? " IS " : "NOT"), " defined");
+		print("\n\tCL version:\t\t\t", _MSC_FULL_VER);
+		print("\n\tBuild timestamp:\t\t", timestamp.data());
+		print("\n\tUnicode ", (dbj::detail::unicode ? " IS " : "NOT"), " defined");
 
 		auto run = [&]( auto && fun, auto && title ) {
-			detail::print(line, "\n\t", title);
+			print(line, "\n\t", title);
 			try {
 				auto result = fun();
 				using type_ = typename decltype(result)::value_type;
 				std::string type_name_{ typeid(type_).name() };
-				detail::print(
+				print(
 					"\n\tProgram name:\t\t\t", (result.size() > 0 ? result[0] : L"Bad Command Line ?"),
 					"\n\tCommand Line:\t\t", result,
 					"\n\tType is vector of:\n", type_name_
 				);
 			}
 			catch (std::runtime_error & err) {
-				detail::print("\n\tException:\n", err.what());
+				print("\n\tException:\n", err.what());
 			}
 			catch (...) {
-				detail::print("\n\tUnknown Xception.");
+				print("\n\tUnknown Xception.");
 			}
 
 		};
@@ -54,7 +54,7 @@ namespace dbj {
 		run(stwish::cli_data, "STWISH Solution");
 
 
-		detail::print(
+		print(
 			line,
 			"\n\tR&D and testing (c) 2017-2018 by dbj.org",
 			"\n\t__targv based solution variant (c) by Steve Wishnousky\n"

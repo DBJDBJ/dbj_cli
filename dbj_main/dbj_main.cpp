@@ -5,13 +5,13 @@
 
 static void test_almost_certain_cli()
 {
-	auto [ w_cli, n_cli   ] = dbj::cli_almost_certain();
+	auto [ w_cli, n_cli   ] = dbj::cli_arguments();
 
 	if (w_cli.size())
-		dbj::detail::print(w_cli);
+		dbj::print(w_cli);
 
 	if (n_cli.size())
-		dbj::detail::print(n_cli);
+		dbj::print(n_cli);
 
 }
 /// <summary>

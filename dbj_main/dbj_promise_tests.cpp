@@ -30,7 +30,7 @@ namespace {
 		thread work_thread(accumulate, numbers.begin(), numbers.end(),
 			move(accumulate_promise));
 		accumulate_future.wait();  // wait for result
-		dbj::detail::print(__func__ ,  " -- result = ", accumulate_future.get(), '\n');
+		dbj::print(__func__ ,  " -- result = ", accumulate_future.get(), '\n');
 		work_thread.join();  // wait for thread completion
 
 	// Demonstrate using promise<void> to signal state between threads.

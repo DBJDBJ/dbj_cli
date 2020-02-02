@@ -1,6 +1,6 @@
 # dbj_cli
 
-## CLI data for C++17 clients
+## CLI arguments for C++ clients
 
 #### The History (2017)
 
@@ -34,30 +34,30 @@ auto cli_data = []() {
 Steve Wishnousky (@stwish) solution, seems better. But it just hides the same issue with _TCHAR macro.
 
 ```cpp
-	using vector_tstring_type = std::vector<std::basic_string<_TCHAR> >;
-	namespace {
+using vector_tstring_type = std::vector<std::basic_string<_TCHAR> >;
+namespace {
 
-		auto cli_data = []() {
-			try {
-				return
-					vector_tstring_type
-				{
-					__targv,
-					(__targv ?
-					__targv + __argc :
-					__targv)
-				};
-			}
-			catch (...) {
-				throw std::runtime_error(__func__);
-			}
-		};
+auto cli_data = []() {
+	try {
+	return
+		vector_tstring_type
+	{
+		__targv,
+		(__targv ?
+		__targv + __argc :
+		__targv)
+	};
 	}
+	catch (...) {
+		throw std::runtime_error(__func__);
+	}
+};
+}
 ```
 
 #### The Solution 2020
 
-Probably it might be impossible when any one of the two might be nullptr or not. So. Why do not we try and receive 
+Probably it might be impossible to solve the logic, when any one of the two might be nullptr or not. So. Why do not we try and receive 
 std vector results from both? And this leads to a simple code.
 ```cpp
 	struct cli_data_rettype final 
@@ -95,6 +95,33 @@ And simple but efective usage
 		dbj::detail::print(n_cli);
 
 ```
+## The 'final solution'
+It is only that ["over elaborated"](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0939r4.pdf) std::string is not required at all.
+```cpp
+///-----------------------------------------------------------------------------///
+///	(c) 2020 by dbj.org, CC BY SA 4.0
+struct cli_arguments_vectors final
+{
+	using wide_type = std::vector<wchar_t* >;
+	using narrow_type = std::vector<char*  >;
 
-Of course this call migh be happening anytime , thus both `__argv` and `__wargv` might be `nullptr`.
+	wide_type wide{};
+	narrow_type narrow{};
+};
+
+inline cli_arguments_vectors cli_arguments()
+{
+	cli_arguments_vectors retval{};
+
+	if (wargv_)
+		retval.wide = cli_arguments_vectors::wide_type( __wargv, __wargv + argc_ );
+    
+	if (argv_)
+		retval.narrow = cli_arguments_vectors::narrow_type( __argv, __argv + argc_ );
+
+	return retval;
+}
+```
+#### Caution
+Of course, calling `cli_arguments()` might be happening anytime, including before and after main. Thus both `__argv` and `__wargv` might be `nullptr`.
 Which will produce two empty vectors.

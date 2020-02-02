@@ -102,11 +102,21 @@ std::wostream& operator<<(std::wostream& os, std::string_view s_) {
 	return os;
 }
 
+template<typename  SEQ >
+inline void seq_output(dbj::detail::outstream_type& os, SEQ const & sequence_ ) {
+	os << dbj::detail::LEFT_ANGLED << dbj::detail::SPACE;
+	for (auto& el : sequence_) { os << el << dbj::detail::SPACE; }
+	os << dbj::detail::RGHT_ANGLED;
+}
 template<typename T>
 inline dbj::detail::outstream_type& operator<<(dbj::detail::outstream_type& os, const std::vector<T>& vec) {
-	os << dbj::detail::LEFT_ANGLED << dbj::detail::SPACE;
-	for (auto& el : vec) { os << el << dbj::detail::SPACE; }
-	os << dbj::detail::RGHT_ANGLED;
+	seq_output(os,vec);
+	return os;
+}
+
+template<typename T, size_t N>
+inline dbj::detail::outstream_type& operator<<(dbj::detail::outstream_type& os, const std::array<T,N>& arr) {
+	seq_output(os,arr);
 	return os;
 }
 
@@ -195,33 +205,36 @@ namespace dbj {
 
 		inline dbj_log_type single_log_instance_{}; // dbj_log_type instance made here
 
-	/*
+
+	} // detail nspace
+
+		/*
 	just print to the stream as ever
 	*/
-		inline auto print = [](auto ... param)
-		{
-			constexpr auto no_of_args = sizeof...(param);
-			auto& os = single_log_instance_.stream();
+	inline auto print = [](auto ... param)
+	{
+		constexpr auto no_of_args = sizeof...(param);
+		auto& os = detail::single_log_instance_.stream();
 
-			if constexpr (no_of_args > 0) {
+		if constexpr (no_of_args > 0) {
 
-				if (dbj_log_type::TIMESTAMP) 
-					os << "\n" << dbj::god_of_time::timestamp().data() << " : ";
+			if (detail::dbj_log_type::TIMESTAMP)
+				os << "\n" << dbj::god_of_time::timestamp().data() << " : ";
 
-				volatile char dummy[no_of_args] = {
-					((
-						os << param
-					  ), 0)...
-				};
-				// remove the annoying warning : unused variable 'dummy' [-Wunused-variable]
-				(void)dummy;
-			}
-			os << std::flush; // provokes output from dbj buffer that is os target
+			volatile char dummy[no_of_args] = {
+				((
+					os << param
+				  ), 0)...
+			};
+			// remove the annoying warning : unused variable 'dummy' [-Wunused-variable]
+			(void)dummy;
+		}
+		os << std::flush; // provokes output from dbj buffer that is os target
 #ifndef __clang__
-			return print;
+		return print;
 #endif
-		};
-	} // detail nspace
+	};
+
 } // dbj
 
 #pragma endregion

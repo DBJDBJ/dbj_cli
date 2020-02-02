@@ -3,7 +3,9 @@
 dbj dll api
 */
 
-extern "C" {
+#ifdef __cplusplus    // If used by C++ code, 
+extern "C" {          // we need to export the C interface
+#endif
 
 #ifndef BUFSIZ
 #define BUFSIZ 512
@@ -25,5 +27,7 @@ extern "C" {
 			int nCmdShow);
 
 	int __stdcall testA(const char * argv[BUFSIZ], int argc);
-}
 
+#ifdef __cplusplus    // If used by C++ code, 
+} // extern "C" 
+#endif

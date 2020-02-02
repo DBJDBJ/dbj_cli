@@ -9,7 +9,7 @@ dbj Run Time lib
 #include <sstream>
 // #include <iostream>
 #include <string_view>
-#include "dbj_dbg.h"
+#include "../dbj_common.h"
 
 // this will do      std::ios::sync_with_stdio(false);
 #define DBJ_LOG_EXCLUSIVE

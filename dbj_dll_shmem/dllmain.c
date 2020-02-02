@@ -3,25 +3,35 @@
 
 #include "dbjdllshmem.h"
 
-namespace dbj::shmem {
+	LPVOID dbj_global_shmem_pointer()
+	{
+		LPVOID dbj_global_shmem_pointer_ = NULL;
+		return dbj_global_shmem_pointer_; 
+	}
 
 	static HANDLE hMapObject = NULL;  // handle to file mapping
 
-	extern "C" inline BOOL on_process_attach() {
+	static BOOL on_process_attach() {
 
 		BOOL fInit;
 
 		// Create a named file mapping object
 
-		hMapObject = CreateFileMapping(
+		hMapObject = CreateFileMappingW(
 			INVALID_HANDLE_VALUE,   // use paging file
 			NULL,                   // default security attributes
 			PAGE_READWRITE,         // read/write access
 			0,                      // size: high 32-bits
 			SHMEMSIZE,              // size: low 32-bits
-			TEXT("dllmemfilemap")); // name of map object
-		if (hMapObject == NULL)
+			TEXT(MAP_OBJECT_NAME)  // name of map object
+		);
+
+		if (hMapObject == NULL) {
+			
+			DBJ_TRACE("Could not create file mapping object (%d).\n",	GetLastError());
+
 			return FALSE;
+		}
 
 		// The first process to attach initializes memory
 
@@ -29,35 +39,37 @@ namespace dbj::shmem {
 
 		// Get a pointer to the file-mapped shared memory
 
-		lpvMem = MapViewOfFile(
+		LPVOID dgsp_ = dbj_global_shmem_pointer();
+		dgsp_ = MapViewOfFile(
 			hMapObject,     // object to map view of
-			FILE_MAP_WRITE, // read/write access
+			FILE_MAP_ALL_ACCESS, // read/write access
 			0,              // high offset:  map from
 			0,              // low offset:   beginning
-			0);             // default: map entire file
-		if (lpvMem == NULL)
-			return FALSE;
+			SHMEMSIZE);             // default: map entire file
+		
+		if (dgsp_ == NULL)
+		{
+			printf("Could not map view of file (%d).\n", GetLastError());
+			CloseHandle(hMapObject);
+				return FALSE;
+		}
 
-		// Initialize memory if this is the first process
-
+		// zero the  memory if this is the first process
 		if (fInit)
-			memset(lpvMem, '\0', SHMEMSIZE);
+			memset(dgsp_ , '\0', SHMEMSIZE);
 
 		return TRUE;
 	}
 
-	extern "C" inline BOOL on_process_detach() {
+	static BOOL on_process_detach() {
 		// Unmap shared memory from the process's address space
-
-		BOOL fIgnore = UnmapViewOfFile(lpvMem);
+		BOOL fIgnore = UnmapViewOfFile(dbj_global_shmem_pointer() );
 
 		// Close the process's handle to the file-mapping object
-
 		fIgnore = CloseHandle(hMapObject);
 
 		return TRUE;
 	}
-} // ns
 /*
 	A process loads the DLL (DLL_PROCESS_ATTACH).
 	The current process creates a new thread (DLL_THREAD_ATTACH).
@@ -72,12 +84,13 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-		if (!dbj::shmem::on_process_attach()) return FALSE;
+		if (!on_process_attach()) return FALSE;
 		break;
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
+	case DLL_THREAD_ATTACH:
+		break;
+	case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
-		if (!dbj::shmem::on_process_detach()) return FALSE;
+		if (!on_process_detach()) return FALSE;
         break;
     }
     return TRUE;

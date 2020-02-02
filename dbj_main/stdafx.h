@@ -4,6 +4,7 @@
 //
 
 #pragma once
+#include <cassert>
 #include "../dbj_lib/test.h"
 #include "../dbj_dll_shmem/dbjdllshmem.h"
 

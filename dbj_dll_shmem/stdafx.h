@@ -7,9 +7,7 @@
 
 #include "targetver.h"
 
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-// Windows Header Files:
-#include <windows.h>
-#include "dbj_dll.h"
-// additional headers
-#include "../dbj_lib/test.h"
+#include "../dbj_common.h"
+
+// #include "dbj_dll.h"
+

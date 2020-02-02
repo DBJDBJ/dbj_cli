@@ -1,6 +1,8 @@
 // dbj_dll.cpp : Defines the exported functions for the DLL application.
 // Exported functions from this DLL module
 #include "stdafx.h"
+// additional headers
+#include "../dbj_lib/test.h"
 
 static void __stdcall
 		PointW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine,

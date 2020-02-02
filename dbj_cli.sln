@@ -5,11 +5,23 @@ VisualStudioVersion = 16.0.29721.120
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dbj_main", "dbj_main\dbj_main.vcxproj", "{1CEEDF60-3722-43E9-B41E-D2D06EE883DB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dbj_lib", "dbj_lib\dbj_lib.vcxproj", "{0FD3D716-3198-439A-A23B-129B82356E70}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dbj_win_io_redirect", "dbj_win_io_redirect\dbj_win_io_redirect.vcxproj", "{385FD819-831C-4BCA-9D01-B9A2A972CFC6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dbj_dll", "dbj_dll_shmem\dbj_dll.vcxproj", "{D89C5FDB-2038-480F-A835-2CFFDCE5699D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dbj_dll_shmem", "dbj_dll_shmem\dbj_dll.vcxproj", "{D89C5FDB-2038-480F-A835-2CFFDCE5699D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{417B55B0-1E27-4F98-BE8F-384E492779BC}"
+	ProjectSection(SolutionItems) = preProject
+		dbj_common.h = dbj_common.h
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dbj_lib", "dbj_lib", "{A989C7A4-86D7-4014-991C-EDF91630327F}"
+	ProjectSection(SolutionItems) = preProject
+		dbj_lib\dbj_clidata.h = dbj_lib\dbj_clidata.h
+		dbj_lib\dbj_micro_log.h = dbj_lib\dbj_micro_log.h
+		dbj_lib\steve_wishnousky_cli_data.h = dbj_lib\steve_wishnousky_cli_data.h
+		dbj_lib\test.h = dbj_lib\test.h
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,14 +39,6 @@ Global
 		{1CEEDF60-3722-43E9-B41E-D2D06EE883DB}.Release|x64.Build.0 = Release|x64
 		{1CEEDF60-3722-43E9-B41E-D2D06EE883DB}.Release|x86.ActiveCfg = Release|Win32
 		{1CEEDF60-3722-43E9-B41E-D2D06EE883DB}.Release|x86.Build.0 = Release|Win32
-		{0FD3D716-3198-439A-A23B-129B82356E70}.Debug|x64.ActiveCfg = Debug|x64
-		{0FD3D716-3198-439A-A23B-129B82356E70}.Debug|x64.Build.0 = Debug|x64
-		{0FD3D716-3198-439A-A23B-129B82356E70}.Debug|x86.ActiveCfg = Debug|Win32
-		{0FD3D716-3198-439A-A23B-129B82356E70}.Debug|x86.Build.0 = Debug|Win32
-		{0FD3D716-3198-439A-A23B-129B82356E70}.Release|x64.ActiveCfg = Release|x64
-		{0FD3D716-3198-439A-A23B-129B82356E70}.Release|x64.Build.0 = Release|x64
-		{0FD3D716-3198-439A-A23B-129B82356E70}.Release|x86.ActiveCfg = Release|Win32
-		{0FD3D716-3198-439A-A23B-129B82356E70}.Release|x86.Build.0 = Release|Win32
 		{385FD819-831C-4BCA-9D01-B9A2A972CFC6}.Debug|x64.ActiveCfg = Debug|x64
 		{385FD819-831C-4BCA-9D01-B9A2A972CFC6}.Debug|x64.Build.0 = Debug|x64
 		{385FD819-831C-4BCA-9D01-B9A2A972CFC6}.Debug|x86.ActiveCfg = Debug|Win32

@@ -2,5 +2,3 @@ LIBRARY "dbj_dll_shmem"
 EXPORTS
 dbj_set_shared_mem @1
 dbj_get_shared_mem @2
-dbj_global_shmem_pointer @3
-

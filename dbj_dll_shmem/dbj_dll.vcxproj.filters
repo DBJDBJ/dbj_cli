@@ -21,9 +21,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dbj_dll_load.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="dbjdllshmem.h">
       <Filter>Header Files</Filter>
     </ClInclude>

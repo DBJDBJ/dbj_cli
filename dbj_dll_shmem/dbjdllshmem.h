@@ -18,11 +18,11 @@ extern "C" {          // we need to export the C interface
 
 	/* 
 	Shared memory can be mapped to a different address in each process.For this reason, 
-	each process has its own instance of dbj_global_shmem_pointer  , which is declared as a global variable 
+	each process has its own instance of dbj_global_shmem_pointer()  , which is declared as a global variable 
 	so that it is available to all DLL functions.The example assumes that the DLL global
-	data is not shared, so each process that loads the DLL has its own instance of dbj_global_shmem_pointer  .
+	data is not shared, so each process that loads the DLL has its own instance of dbj_global_shmem_pointer()  .
 	*/
-	/*static*/ __declspec(dllexport) LPVOID dbj_global_shmem_pointer()  ;      // pointer to shared memory
+	__declspec(dllexport) LPVOID dbj_global_shmem_pointer() ;      // pointer to shared memory
 
   // The export mechanism used here is the __declspec(export)
   // method supported by Microsoft Visual Studio, but any
@@ -60,7 +60,7 @@ extern "C" {          // we need to export the C interface
 		LPWSTR lpszTmp;
 
 		// Get the address of the shared memory block
-		lpszTmp = (LPWSTR)dbj_global_shmem_pointer () ;
+		lpszTmp = (LPWSTR)dbj_global_shmem_pointer() ;
 
 		// Copy from shared memory into the caller's buffer
 		while (*lpszTmp && --cchSize)

@@ -86,7 +86,7 @@
 			*lpszTmp++ = *lpszBuf++;
 			dwCount++;
 		}
-		// at the terminator for a good measure
+		// ad the terminator for a good measure
 		// NO! --> *lpszTmp = '\0';
 	}
 

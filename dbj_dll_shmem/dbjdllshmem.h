@@ -7,22 +7,31 @@
 extern "C" {          // we need to export the C interface
 #endif
 
-	#define SHMEMSIZE 4096
+#define SHMEMSIZE 4096
 
-	/// Prefixing the file mapping object names with "Global\" allows processes 
-	/// to communicate with each other even if they are in different terminal 
-	/// server sessions. This requires that the creating process must have 
-	/// the SeCreateGlobalPrivilege privilege.
-	/// #define MAP_OBJECT_NAME "Global\\dbj_shmem_dll_mem_filemap"
-	#define MAP_OBJECT_NAME "dbj_shmem_dll_mem_filemap.txt"
+/// Prefixing the file mapping object names with "Global\" allows processes 
+/// to communicate with each other even if they are in different terminal 
+/// server sessions. This requires that the creating process must have 
+/// the SeCreateGlobalPrivilege privilege.
+/// #define MAP_OBJECT_NAME "Global\\dbj_shmem_dll_mem_filemap"
+/*
+	SE_CREATE_GLOBAL_NAME
+	TEXT("SeCreateGlobalPrivilege")
 
-	/* 
-	Shared memory can be mapped to a different address in each process.For this reason, 
-	each process has its own instance of dbj_global_shmem_pointer()  , which is declared as a global variable 
+	Required to create named file mapping objects in the global namespace
+	during Terminal Services sessions.This privilege is enabled by default 
+	for administrators, services, and the local system account.
+	User Right : Create global objects.
+*/
+#define MAP_OBJECT_NAME "dbj_shmem_dll_mem_filemap.txt"
+
+	/*
+	Shared memory can be mapped to a different address in each process.For this reason,
+	each process has its own instance of dbj_global_shmem_pointer()  , which is declared as a global variable
 	so that it is available to all DLL functions.The example assumes that the DLL global
 	data is not shared, so each process that loads the DLL has its own instance of dbj_global_shmem_pointer()  .
 	*/
-	__declspec(dllexport) LPVOID dbj_global_shmem_pointer() ;      // pointer to shared memory
+	__declspec(dllexport) LPVOID dbj_global_shmem_pointer();      // pointer to shared memory
 
   // The export mechanism used here is the __declspec(export)
   // method supported by Microsoft Visual Studio, but any

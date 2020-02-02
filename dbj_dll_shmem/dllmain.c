@@ -87,7 +87,7 @@
 			dwCount++;
 		}
 		// at the terminator for a good measure
-		*lpszTmp = '\0';
+		// NO! --> *lpszTmp = '\0';
 	}
 
 		///----------------------------------------------------------------------
@@ -100,7 +100,7 @@
 		lpszTmp = (LPWSTR)dbj_global_shmem_pointer_;
 
 		// Copy from shared memory into the caller's buffer
-		while (*lpszTmp && --cchSize)
+		while (*lpszTmp && cchSize-- )
 			*lpszBuf++ = *lpszTmp++;
 		*lpszBuf = '\0';
 	}
